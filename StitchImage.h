@@ -16,7 +16,7 @@
 #include "MyCompensator.h"
 #include "MyBlender.h"
 #include "MySeamFinder.h"
-#include "MyWarper.h"
+
 
 namespace cv {
 
