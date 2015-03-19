@@ -15,11 +15,17 @@
 using namespace std;
 using namespace cv;
 
+static void callback(void *pItem, char *pDeviceName)
+{
+	printf("%s\n", (char*)pDeviceName);
+}
+
+
 int main(int argc, char *aargv[])
 {
 	int count = cudaDeviceCount();
 	printf("CUDA device count:%d\n", count);
-	count = WebCam::EnumDevices(NULL, NULL);
+	count = WebCam::EnumDevices((PENUMDEVICE)&callback, NULL);
 	printf("Camera device count:%d\n", count);
 
 	VideoCapture cam;

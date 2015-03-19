@@ -90,7 +90,10 @@ int WebCam::EnumDevices(PENUMDEVICE pCallback, void* pItem)
 		{
 			if (strstr(dir->d_name, "video"))
 			{
-				printf("%s\n", dir->d_name);
+				if (pCallback != NULL)
+				{
+					(*pCallback)(pItem, dir->d_name);
+				}
 				count++;
 			}
 		}
