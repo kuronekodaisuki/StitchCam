@@ -74,10 +74,24 @@ int WebCam::EnumDevices(PENUMDEVICE pCallback, void* pItem)
 	return nDevice; // returns count of camera
 }
 #else	// Other plathome 
+#include <dirent.h>	// POSIX directory 
 int WebCam::EnumDevices(PENUMDEVICE pCallback, void* pItem)
 {
-	int nDevice = 0;
-	return nDevice;
+	int count = 0;
+	DIR *d;
+
+	d = opendir("/dev/video*");
+	if (d != NULL)
+	{
+		struct dirent *dir;
+		while ((dir = readdir(d)) != NULL)
+		{
+			printf("%s\n", dir->d_name);
+			count++;
+		}
+		closedir(d);
+	}
+	return count;
 }
 #endif
 
