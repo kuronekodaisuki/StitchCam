@@ -14,12 +14,6 @@ CPP_SRCS += \
 ../libraries.cpp \
 ../main.cpp 
 
-CU_SRCS += \
-../gpuApply.cu 
-
-CU_DEPS += \
-./gpuApply.d 
-
 OBJS += \
 ./MyBlender.o \
 ./MyCompensator.o \
@@ -28,7 +22,6 @@ OBJS += \
 ./StitchImage.o \
 ./WebCam.o \
 ./cuda.o \
-./gpuApply.o \
 ./libraries.o \
 ./main.o 
 
@@ -52,11 +45,4 @@ CPP_DEPS += \
 	@echo 'Finished building: $<'
 	@echo ' '
 
-gpuApply.o: ../gpuApply.cu
-	@echo 'Building file: $<'
-	@echo 'Invoking: NVCC Compiler'
-	/usr/local/cuda-6.5/bin/nvcc -O3  -odir "" -M -o "$(@:%.o=%.d)" "$<"
-	/usr/local/cuda-6.5/bin/nvcc -O3   "$@" "$<"
-	@echo 'Finished building: $<'
-	@echo ' '
 

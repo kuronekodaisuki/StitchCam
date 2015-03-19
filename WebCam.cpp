@@ -75,20 +75,24 @@ int WebCam::EnumDevices(PENUMDEVICE pCallback, void* pItem)
 }
 #else	// Other plathome 
 #include <stdio.h>
+#include <string.h>
 #include <dirent.h>	// POSIX directory 
 int WebCam::EnumDevices(PENUMDEVICE pCallback, void* pItem)
 {
 	int count = 0;
 	DIR *d;
 
-	d = opendir("/dev/video*");
+	d = opendir("/dev");
 	if (d != NULL)
 	{
 		struct dirent *dir;
 		while ((dir = readdir(d)) != NULL)
 		{
-			printf("%s\n", dir->d_name);
-			count++;
+			if (strstr(dir->d_name, "video"))
+			{
+				printf("%s\n", dir->d_name);
+				count++;
+			}
 		}
 		closedir(d);
 	}
