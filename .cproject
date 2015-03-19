@@ -27,6 +27,7 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.level.867858511" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.1821578884" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.optimization.flags.424639450" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" value="-msse4.2" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.879422985" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.482450868" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
