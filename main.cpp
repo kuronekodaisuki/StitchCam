@@ -19,13 +19,14 @@ int main(int argc, char *aargv[])
 	printf("CUDA device count:%d\n", count);
 	VideoCapture cam;
 	cam.open(0);
-	while (1)
+	for (bool loop = true; loop; )
 	{
 		char key = (char)waitKey(10);
 		switch (key)
 		{
 		case 'q':
 		case 'Q':
+			loop = false;
 			break;
 		}
 		Mat image;
