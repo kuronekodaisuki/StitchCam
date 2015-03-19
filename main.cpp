@@ -8,7 +8,9 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
+
 #include "cuda.h"
+#include "WebCam.h"
 
 using namespace std;
 using namespace cv;
@@ -17,6 +19,9 @@ int main(int argc, char *aargv[])
 {
 	int count = cudaDeviceCount();
 	printf("CUDA device count:%d\n", count);
+	count = WebCam::EnumDevices(NULL, NULL);
+	printf("Camera device count:%d\n", count);
+
 	VideoCapture cam;
 	cam.open(0);
 	for (bool loop = true; loop; )
