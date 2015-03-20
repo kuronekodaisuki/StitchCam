@@ -10,6 +10,7 @@
 #include <dshow.h>
 #define HAVE_MSMF
 #define HAVE_VFW
+#pragma warning(disable: 4996)
 #endif
 
 using namespace cv;
