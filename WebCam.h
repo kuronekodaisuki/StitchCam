@@ -45,6 +45,7 @@ public:
 
 public:
 	void SetName(char *name) {strncpy(this->name, name, 80);}
+	char *GetName() {return name; }
 
 protected:
 	char name[80];
