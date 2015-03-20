@@ -3,6 +3,7 @@
 //
 
 #include <opencv2/highgui/highgui.hpp>
+#include <string.h>
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -41,4 +42,10 @@ public:
 	*/
 
 	//bool open(const string& filename, int mode);
+
+public:
+	void SetName(char *name) {strncpy(this->name, name, 80);}
+
+protected:
+	char name[80];
 };
