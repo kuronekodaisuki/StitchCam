@@ -1,4 +1,4 @@
-// StitchImage.cpp : �R���\�[�� �A�v���P�[�V�����̃G���g�� �|�C���g���`���܂��B
+// StitchImage.cpp : 
 //
 
 //#include "stdafx.h"
@@ -7,7 +7,7 @@
 #include <fstream>
 #include <vector>
 #include <stdio.h>
-//#include <timer.h>	// $(CudaToolkitDir)\common\inc��ǉ����邱��
+//#include <timer.h>	// $(CudaToolkitDir)\common\inc
 
 #include "opencv2/opencv_modules.hpp"
 #include <opencv2/gpu/gpu.hpp>
@@ -549,7 +549,7 @@ StitchImage::Status StitchImage::composePanoramaGpu(InputArray images, OutputArr
 #endif
 
 	//////////////////////////////////////////////////////////////////////////
-	// ���[�s���O
+	// 
 
     vector<Point> corners(imgs_.size());
     vector<Size> sizes(imgs_.size());
@@ -605,8 +605,8 @@ StitchImage::Status StitchImage::composePanoramaGpu(InputArray images, OutputArr
 #endif
 
 	//////////////////////////////////////////////////////////////////////////
-	// ����
-	// �I�o�␳���
+	//
+	// 
     exposure_comp_->feed(corners, images_warped, masks_warped);
 
 	// Release unused memory
@@ -692,19 +692,19 @@ StitchImage::Status StitchImage::composePanoramaGpu(InputArray images, OutputArr
         // Warp the current image
 #if 1
 		img_gpu.upload(img);
-        w->warp_gpu(img_gpu, K, cameras_[img_idx].R, INTER_LINEAR, BORDER_REFLECT, img_warped_gpu);	// gpu::Mat�ɏo��
+        w->warp_gpu(img_gpu, K, cameras_[img_idx].R, INTER_LINEAR, BORDER_REFLECT, img_warped_gpu);	// 
 
         // Warp the current image mask
         mask_gpu.create(img_size, CV_8U);
         mask_gpu.setTo(Scalar::all(255));
-        w->warp_gpu(mask_gpu, K, cameras_[img_idx].R, INTER_NEAREST, BORDER_CONSTANT, mask_warped_gpu);	// gpu::Mat�ɏo��
+        w->warp_gpu(mask_gpu, K, cameras_[img_idx].R, INTER_NEAREST, BORDER_CONSTANT, mask_warped_gpu);	// 
 #else
-        w->warp(img, K, cameras_[img_idx].R, INTER_LINEAR, BORDER_REFLECT, img_warped);	// gpu::Mat�ɏo��
+        w->warp(img, K, cameras_[img_idx].R, INTER_LINEAR, BORDER_REFLECT, img_warped);	// 
 
         // Warp the current image mask
         mask.create(img_size, CV_8U);
         mask.setTo(Scalar::all(255));
-        w->warp(mask, K, cameras_[img_idx].R, INTER_NEAREST, BORDER_CONSTANT, mask_warped);	// gpu::Mat�ɏo��
+        w->warp(mask, K, cameras_[img_idx].R, INTER_NEAREST, BORDER_CONSTANT, mask_warped);	// 
 #endif
 
 #if ENABLE_LOG
@@ -712,9 +712,9 @@ StitchImage::Status StitchImage::composePanoramaGpu(InputArray images, OutputArr
 //		Warping, time: 29.5079 msec
 		cout << "Warping, time: " << ((getTickCount() - t) / getTickFrequency()) << " sec" << endl;
 #endif
-        // �I�o�␳
+        // 
  #if 1
-		exposure_comp_->apply((int)img_idx, corners[img_idx], img_warped_gpu, mask_warped_gpu);	// ��o�͂Ƃ�gpu::Mat��
+		exposure_comp_->apply((int)img_idx, corners[img_idx], img_warped_gpu, mask_warped_gpu);	// 
 		img_warped_gpu.download(img_warped);
 		mask_warped_gpu.download(mask_warped);
 
@@ -722,7 +722,7 @@ StitchImage::Status StitchImage::composePanoramaGpu(InputArray images, OutputArr
 		img_warped_gpu.release();
 		mask_warped_gpu.release();
 #else
-		exposure_comp_->apply((int)img_idx, corners[img_idx], img_warped, mask_warped);	// ��o�͂Ƃ�gpu::Mat��
+		exposure_comp_->apply((int)img_idx, corners[img_idx], img_warped, mask_warped);	// 
 #endif
         img.release();
         mask.release();
@@ -751,8 +751,8 @@ StitchImage::Status StitchImage::composePanoramaGpu(InputArray images, OutputArr
 //		imwrite(buffer, mask_warped);
 		cout << corners[img_idx] << endl;
 #endif
-        // ����
-        blender_->feed(img_warped, mask_warped, corners[img_idx]);	// ��o�͂Ƃ���gpu::Mat��
+        // 
+        blender_->feed(img_warped, mask_warped, corners[img_idx]);	// 
 		img_warped.release();
 		mask_warped.release();
     }
@@ -764,7 +764,7 @@ StitchImage::Status StitchImage::composePanoramaGpu(InputArray images, OutputArr
 
     Mat &pano_ = pano.getMatRef();
     Mat result, result_mask;	// reuse
-    blender_->blend(pano_, result_mask);	// gpu::Mat����Mat��download
+    blender_->blend(pano_, result_mask);	// 
 
 #if ENABLE_LOG
 //	Compositing, time: 63.345 msec

@@ -33,7 +33,7 @@ MyCompensator::MyCompensator(bool useGpu)
 			{
 				if (oclPlatforms[i]->devices[device]->deviceType == ocl::CVCL_DEVICE_TYPE_GPU)
 				{
-					ocl::setDevice(oclPlatforms[i]->devices[device]);	// CUDA���g���Ȃ����̑�փf�o�C�X
+					ocl::setDevice(oclPlatforms[i]->devices[device]);	// CUDA revert
 					cout << "\t" << oclPlatforms[i]->devices[device]->deviceName << endl;
 					// OpenCL device extensions
 					string clDeviceExtensions = oclPlatforms[i]->devices[device]->deviceExtensions;				
@@ -89,7 +89,7 @@ void MyCompensator::feed(const vector<Point> &corners, const vector<Mat> &images
                     const Point3_<uchar>* r2 = subimg2.ptr<Point3_<uchar> >(y);
                     for (int x = 0; x < roi.width; ++x)
                     {
-						// CUDA�ł�atmicAdd�Ŋe�X���b�h�̒l���W��ł���
+						// use with CUDA (AtomicAdd)
                         if (intersect(y, x))
                         {
                             Isum1 += sqrt(static_cast<double>(sqr(r1[x].x) + sqr(r1[x].y) + sqr(r1[x].z)));
@@ -138,7 +138,7 @@ void MyCompensator::apply(int index, Point corner, Mat &image, const Mat &mask)
 		//args.push_back( std::make_pair( sizeof(cl_mem), (void *) &mat.data ));
 		ocl::ProgramSource program("apply", "");	// oclApply.cl
 		ocl::openCLExecuteKernelInterop(ocl::Context::getContext(), 
-        program, "apply", threads, NULL, args, -1, -1, NULL);	// channel, depth��-1�ɂ���Ɗ֐����̂܂܌Ă�
+        program, "apply", threads, NULL, args, -1, -1, NULL);	// channel, depth
 		mat.download(image);
 		*/
 	}
@@ -151,7 +151,7 @@ void MyCompensator::apply(int index, Point corner, Mat &image, const Mat &mask)
 		image *= gains_(index, 0);
 	}
 #ifdef	_DEBUG
-	cout << "GAIN" << index << ": " << gains_(index, 0) << endl;	// �I�o�␳�l�i�X�J���[�j
+	cout << "GAIN" << index << ": " << gains_(index, 0) << endl;	// 
 #endif
 }
 
@@ -162,7 +162,7 @@ void MyCompensator::apply(int index, Point corner, gpu::GpuMat &image, const gpu
 		cudaApply(image, gains_(index, 0));
 	}
 #ifdef	_DEBUG
-	cout << "GAIN" << index << ": " << gains_(index, 0) << endl;	// �I�o�␳�l�i�X�J���[�j
+	cout << "GAIN" << index << ": " << gains_(index, 0) << endl;	// 
 #endif
 }
 

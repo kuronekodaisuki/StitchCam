@@ -2,6 +2,10 @@
 //
 //
 #pragma once
+#ifdef _DEBUG
+#include <vld.h>
+#pragma comment(lib, "vld.lib")
+#endif
 #include <opencv2/core/core.hpp>
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/stitching/warpers.hpp>
