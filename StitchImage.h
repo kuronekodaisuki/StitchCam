@@ -109,8 +109,10 @@ public:
 		warped_image_scale_ = warped_image_scale_save;
 	}
 
+	StitchImage() {}
+
 private:
-    StitchImage() {}
+
 
     Status matchImages();
     void estimateCameraParams();
