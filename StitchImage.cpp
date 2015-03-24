@@ -592,17 +592,14 @@ StitchImage::Status StitchImage::composePanoramaGpu(InputArray images, OutputArr
         sizes[i] = images_warped[i].size();
 
         w->warp(masks_[i], K, cameras_[i].R, INTER_NEAREST, BORDER_CONSTANT, masks_warped[i]);
+
+#ifdef _DEBUG
+		sprintf(buffer, "mask_%d.jpg", i);
+		bool res = imwrite(buffer, masks_warped[i]);
+#endif
     }
 
     LOGLN("Warping images, time: " << ((getTickCount() - t) / getTickFrequency()) << " sec");
-
-#ifdef _DEBUG
-	for (int i = 0; i < (int)masks_warped.size(); i++)
-	{
-		sprintf(buffer, "mask_%d.jpg", i);
-		bool res = imwrite(buffer, masks_warped[i]);
-	}
-#endif
 
 	//////////////////////////////////////////////////////////////////////////
 	//
