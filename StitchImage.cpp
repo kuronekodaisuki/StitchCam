@@ -503,7 +503,11 @@ StitchImage::Status StitchImage::composePanorama(OutputArray pano)
 // composePanoramaGpu
 StitchImage::Status StitchImage::composePanoramaGpu(InputArray images, OutputArray pano)
 {
-	return composePanoramaGpu(images, pano, Rect());
+	try {
+		return composePanoramaGpu(images, pano, Rect());
+	} catch (Exception e) {
+		return Status::ERR_NEED_MORE_IMGS;
+	}
 }
 
 StitchImage::Status StitchImage::composePanoramaGpu(InputArray images, OutputArray pano, Rect roi)

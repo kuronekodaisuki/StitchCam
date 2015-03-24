@@ -28,7 +28,7 @@ class StitchImage
 {
 public:
     enum { ORIG_RESOL = -1 };
-    enum Status { OK, ERR_NEED_MORE_IMGS };
+    enum Status { OK, ERR_NEED_MORE_IMGS, FAILED };
 
     // Creates stitcher with default parameters
     static StitchImage createDefault(bool try_use_gpu = true);
