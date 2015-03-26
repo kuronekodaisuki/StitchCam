@@ -14,8 +14,14 @@
 
 int cudaDeviceCount()
 {
-	int count;
-	cudaGetDeviceCount(&count);
-	return count;
+	int count = 0;
+	if (cudaSuccess == cudaGetDeviceCount(&count))
+	{
+		return count;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
