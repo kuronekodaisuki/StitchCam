@@ -116,8 +116,6 @@ public:
 	StitchImage() {}
 
 private:
-
-
     Status matchImages();
     void estimateCameraParams();
 
