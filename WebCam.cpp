@@ -106,6 +106,14 @@ int WebCam::EnumDevices(PENUMDEVICE pCallback, void* pItem)
 /*
 * Open with specific mode
 */
+WebCam::WebCam()
+{
+}
+
+WebCam::WebCam(const string &filename) : VideoCapture(filename)
+{
+}
+
 #if 0
 bool WebCam::open(const string& filename, int mode)
 {

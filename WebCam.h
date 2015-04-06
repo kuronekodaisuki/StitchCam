@@ -45,6 +45,8 @@ public:
 	//bool open(const string& filename, int mode);
 
 public:
+	WebCam();
+	WebCam(const string& filename);
 	void SetName(char *name) {strncpy(this->name, name, 80);}
 	char *GetName() {return name; }
 
