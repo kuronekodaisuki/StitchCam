@@ -9,8 +9,14 @@
 #include "MyCompensator.h"
 
 using namespace std;
+
 namespace cv {
-using namespace gpu::device;
+namespace gpu {
+namespace device {
+	void cudaApply(gpu::GpuMat &image, double scale);
+	void cudaApply(Mat &image, double scale);
+}	// namespace device
+}	// namespace gpu
 
 namespace detail {
 
@@ -144,7 +150,7 @@ void MyCompensator::apply(int index, Point corner, Mat &image, const Mat &mask)
 	}
 	else if (useGpu)
 	{
-		cudaApply(image, gains_(index, 0));
+		cv::gpu::device::cudaApply(image, gains_(index, 0));
 	}
 	else
 	{
@@ -159,7 +165,7 @@ void MyCompensator::apply(int index, Point corner, gpu::GpuMat &image, const gpu
 {
 	if (useGpu)
 	{
-		cudaApply(image, gains_(index, 0));
+		cv::gpu::device::cudaApply(image, gains_(index, 0));
 	}
 #ifdef	_DEBUG
 	cout << "GAIN" << index << ": " << gains_(index, 0) << endl;	// 
