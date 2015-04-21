@@ -16,11 +16,11 @@ namespace detail {
 
 class GainCompensatorGpu : public GainCompensator
 {
-    void apply(int index, Point corner, Mat &image, const Mat &mask);
+    //void apply(int index, Point corner, Mat &image, const Mat &mask);
 	virtual void apply(int index, Point corner, gpu::GpuMat &image, const gpu::GpuMat &mask);
 };
 
-class MyCompensator : public GainCompensatorGpu
+class MyCompensator : public GainCompensator
 {
 public:
 	void feed(const vector<Point> &corners, const vector<Mat> &images,

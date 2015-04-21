@@ -79,7 +79,7 @@ public:
 
     Ptr<detail::ExposureCompensator> exposureCompensator() { return exposure_comp_; }
     const Ptr<detail::ExposureCompensator> exposureCompensator() const { return exposure_comp_; }
-    void setExposureCompensator(Ptr<detail::GainCompensatorGpu> exposure_comp)
+    void setExposureCompensator(Ptr<detail::MyCompensator> exposure_comp)
         { exposure_comp_ = exposure_comp; }
 
     Ptr<detail::SeamFinder> seamFinder() { return seam_finder_; }
