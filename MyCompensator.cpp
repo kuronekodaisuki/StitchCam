@@ -11,6 +11,7 @@
 using namespace std;
 
 namespace cv {
+
 namespace gpu {
 namespace device {
 	void cudaApply(gpu::GpuMat &image, double scale);

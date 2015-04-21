@@ -12,19 +12,12 @@
 using namespace std;
 
 namespace cv {
-
-//namespace gpu {
-//namespace device {
-//void cudaApply(gpu::GpuMat &image, double scale);
-//void cudaApply(Mat &image, double scale);
-//}	// namespace device
-//}	// namespace gpu
-
 namespace detail {
 
 class GainCompensatorGpu : public GainCompensator
 {
-	virtual void apply(int index, Point corner, gpu::GpuMat &image, const gpu::GpuMat &mask) = 0;
+    void apply(int index, Point corner, Mat &image, const Mat &mask);
+	virtual void apply(int index, Point corner, gpu::GpuMat &image, const gpu::GpuMat &mask);
 };
 
 class MyCompensator : public GainCompensatorGpu

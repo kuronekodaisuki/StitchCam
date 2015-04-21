@@ -12,9 +12,6 @@ RM := rm -rf
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(strip $(CU_DEPS)),)
--include $(CU_DEPS)
-endif
 ifneq ($(strip $(C++_DEPS)),)
 -include $(C++_DEPS)
 endif
