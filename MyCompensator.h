@@ -13,12 +13,12 @@ using namespace std;
 
 namespace cv {
 
-namespace gpu {
-namespace device {
-void cudaApply(gpu::GpuMat &image, double scale);
-void cudaApply(Mat &image, double scale);
-}	// namespace device
-}	// namespace gpu
+//namespace gpu {
+//namespace device {
+//void cudaApply(gpu::GpuMat &image, double scale);
+//void cudaApply(Mat &image, double scale);
+//}	// namespace device
+//}	// namespace gpu
 
 namespace detail {
 
@@ -64,7 +64,7 @@ public:
 	MyCompensator(bool useGpu = false);	// constructor
 
 protected:
-	Mat_<double> gains_;	// ï‚ê≥íl
+	Mat_<double> gains_;	// ÔøΩ‚ê≥ÔøΩl
 	bool useGpu;
 	bool openCL;
 };
