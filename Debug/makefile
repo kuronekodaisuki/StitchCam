@@ -43,7 +43,7 @@ all: StitchCam
 StitchCam: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L/usr/local/lib -L/usr/loca/cuda/lib64 -o "StitchCam" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L/usr/local/cuda/lib64 -L/usr/local/lib -o "StitchCam" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

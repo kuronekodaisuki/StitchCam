@@ -55,8 +55,8 @@ CPP_DEPS += \
 gpuApply.o: ../gpuApply.cu
 	@echo 'Building file: $<'
 	@echo 'Invoking: NVCC Compiler'
-	/usr/local/cuda-6.5/bin/nvcc -O3  -odir "" -M -o "$(@:%.o=%.d)" "$<"
-	/usr/local/cuda-6.5/bin/nvcc -O3   "$@" "$<"
+	nvcc -O3   -odir "" -M -o "$(@:%.o=%.d)" "$<"
+	nvcc -O3   "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

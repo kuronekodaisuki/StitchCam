@@ -12,7 +12,7 @@
 
 #include "cuda.h"
 #include "WebCam.h"
-//#include "StitchImage.h"
+#include "StitchImage.h"
 
 using namespace std;
 using namespace cv;
@@ -22,9 +22,9 @@ static void callback(void *pItem, char *pDeviceName)
 	printf("%s\n", (char*)pDeviceName);
 }
 
-const float WIDTH = 640.0;
-const float HEIGHT = 480.0;
-const float FPS = 30.0;
+const float WIDTH = 320.0;
+const float HEIGHT = 240.0;
+const float FPS = 15.0;
 
 int main(int argc, char *aargv[])
 {
@@ -61,15 +61,27 @@ int main(int argc, char *aargv[])
 		cam0.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
 		cam0.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
 		cam0.set(CV_CAP_PROP_FPS, FPS);
+		cam0.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
 		cam1.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
 		cam1.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
 		cam1.set(CV_CAP_PROP_FPS, FPS);
+		cam1.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
 		
 		vector<Mat> images;
 		try
 		{
-			cam0.open(0);
-			cam1.open(1);
+			bool res;
+			res = cam0.open(CV_CAP_V4L2 + 0);
+			res = cam0.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
+			res = cam0.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
+			res = cam0.set(CV_CAP_PROP_FPS, FPS);
+			//res = cam0.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
+			res = cam1.open(CV_CAP_V4L2 + 1);
+			res = cam1.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
+			res = cam1.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
+			res = cam1.set(CV_CAP_PROP_FPS, FPS);
+			//res = cam1.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
+
 			for (bool loop = true; loop; )
 			{
 				char key = (char)waitKey(10);
@@ -81,12 +93,20 @@ int main(int argc, char *aargv[])
 					break;
 				}
 				Mat image;
-				cam0 >> image;
-				images.push_back(image);
-				imshow("cam0", image);
-				cam1 >> image;
-				images.push_back(image);
-				imshow("cam1", image);
+				if (cam0.isOpened()) {
+					cam0 >> image;
+					if (image.empty() == false) {
+						images.push_back(image);
+						imshow("cam0", image);
+					}
+				}
+				if (cam1.isOpened()) {
+					cam1 >> image;
+					if (image.empty() == false) {
+						images.push_back(image);
+						imshow("cam1", image);
+					}
+				}
 				images.clear();
 			}
 			cam0.release();
