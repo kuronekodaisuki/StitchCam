@@ -194,16 +194,14 @@ BOOL COpenCVStitchDlg::OnInitDialog()
 	if (cudaSuccess == cudaGetDeviceCount(&count) && 0 < count)
 	{
 		stitcher = StitchImage::createDefault(true);	// CUDAが使用できる場合
-		CWnd *pStatus = GetDlgItem(IDC_STATUS);
 		char buffer[80];
 		sprintf(buffer, "%d CUDA device detected.", count);
-		pStatus->SetWindowText(buffer);
+		m_status.SetWindowText(buffer);
 	}
 	else
 	{
 		stitcher = StitchImage::createDefault(false);	// CUDAが使用できない場合
-		CWnd *pStatus = GetDlgItem(IDC_STATUS);
-		pStatus->SetWindowText("No CUDA device detected.");
+		m_status.SetWindowText("No CUDA device detected.");
 	}
 	pDlg = this;
 	int idcCam = IDC_CAM1;
