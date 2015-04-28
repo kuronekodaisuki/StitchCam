@@ -146,7 +146,6 @@ static void callback(void *pItem, char *pDeviceName)
 		item->EnableWindow();
 		item->SetCheck(BST_CHECKED);
 		item->ShowWindow(SW_SHOWNORMAL);
-		//mbstowcs_s(&wlen, buffer, pDeviceName, 80);
 		strcpy(buffer, pDeviceName);
 		// Buffalo‚ÌƒJƒƒ‰‚Ìs––‚ÉCR,LF‚ª“ü‚Á‚Ä‚¢‚é‚Ì‚ÅA‚±‚ê‚ğœ‹
 		for (wlen = strlen(buffer) - 1; 0 < wlen; wlen--) {
@@ -384,7 +383,7 @@ void COpenCVStitchDlg::OnBnClickedCaribrate()
 		char buffer[80];
 		int64 t = getTickCount();
 		stitcher.estimateTransform(images);
-		if (StitchImage::Status::OK == stitcher.composePanorama(images, stitched)) {
+		if (StitchImage::Status::OK == stitcher.composePanorama(stitched)) {
 			sprintf(buffer, "%.2fmsec", (getTickCount() - t) / getTickFrequency() * 1000);
 			m_status.SetWindowText(buffer);
 			imageSize = Size(stitched.cols, stitched.rows);
