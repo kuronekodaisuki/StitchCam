@@ -14,6 +14,7 @@
 
 using namespace cv;
 
+#define AVERAGE_SIZE	10
 
 // COpenCVStitchDlg ダイアログ
 class COpenCVStitchDlg : public CDialogEx
@@ -39,6 +40,10 @@ protected:
 	Size imageSize;
 	UINT_PTR pTimer;
 	bool fileOpened;
+	double value[AVERAGE_SIZE];
+	int iValue;
+
+	void UpdateValue(double value);
 
 	void DoOpen();
 	void DoStitch();

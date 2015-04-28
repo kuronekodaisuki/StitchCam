@@ -193,8 +193,8 @@ BOOL COpenCVStitchDlg::OnInitDialog()
 	if (cudaSuccess == cudaGetDeviceCount(&count) && 0 < count)
 	{
 		stitcher = StitchImage::createDefault(true);	// CUDAが使用できる場合
-		char buffer[80];
-		sprintf(buffer, "%d CUDA device detected.", count);
+		CString buffer;
+		buffer.Format("%d CUDA device detected.", count);
 		m_status.SetWindowText(buffer);
 	}
 	else
@@ -205,6 +205,8 @@ BOOL COpenCVStitchDlg::OnInitDialog()
 	pDlg = this;
 	int idcCam = IDC_CAM1;
 	count = WebCam::EnumDevices((PENUMDEVICE)&callback, &idcCam);
+
+	iValue = 0;
 
 	fileOpened = false;
 
@@ -260,6 +262,22 @@ HCURSOR COpenCVStitchDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+// 平均値を算出して表示
+void COpenCVStitchDlg::UpdateValue(double v)
+{
+	CString buffer;
+	double sum = 0;
+	value[iValue] = v;
+	iValue = (iValue + 1) % AVERAGE_SIZE;
+
+	for (int i = 0; i < AVERAGE_SIZE; i++)
+	{
+		sum += value[i];
+	}
+	buffer.Format("%.2fmsec", sum / AVERAGE_SIZE);
+	m_status.SetWindowText(buffer);
+}
+
 
 // カメラ開始
 void COpenCVStitchDlg::DoOpen()
@@ -274,13 +292,14 @@ void COpenCVStitchDlg::DoOpen()
 		CButton *item = (CButton*)GetDlgItem(id);
 		if (item->GetCheck() == BST_CHECKED)
 		{
-			char name[80], buffer[100];
+			char name[80];
 			bool res;
 			item->GetWindowText(name, 80);
 
 			WebCam cam = WebCam();
 			res = cam.open(id - IDC_CAM1);
 			if (res) {
+				CString buffer;
 				if (m_qvga.GetCheck() == BST_CHECKED) {
 					res = cam.set(CV_CAP_PROP_FRAME_WIDTH, 320.0F);
 					res = cam.set(CV_CAP_PROP_FRAME_HEIGHT, 240.0F);
@@ -291,8 +310,8 @@ void COpenCVStitchDlg::DoOpen()
 				res = cam.set(CV_CAP_PROP_FPS, FPS);
 				res = cam.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
 
-				sprintf(buffer, "%d %s", id - IDC_CAM1 + 1, name);
-				cam.SetName(buffer);
+				buffer.Format("%d %s", id - IDC_CAM1 + 1, name);
+				cam.SetName((LPCSTR)buffer);
 				camera.push_back(cam);
 			}
 		}
@@ -313,7 +332,6 @@ void COpenCVStitchDlg::DoPreview()
 
 void COpenCVStitchDlg::DoStitch()
 {
-	
 	Mat stitched;
 	vector<Mat> images;
 
@@ -327,9 +345,7 @@ void COpenCVStitchDlg::DoStitch()
 	}
 	int64 t = getTickCount();
 	if (StitchImage::Status::OK == stitcher.composePanorama(images, stitched)) {
-		char buffer[80];
-		sprintf(buffer, "%.2fmsec", (getTickCount() - t) / getTickFrequency() * 1000);
-		m_status.SetWindowText(buffer);
+		UpdateValue((getTickCount() - t) / getTickFrequency() * 1000);
 		imshow(STITCHED, stitched);
 		if (writer.isOpened())
 		{
@@ -380,11 +396,11 @@ void COpenCVStitchDlg::OnBnClickedCaribrate()
 	}
 	if (2 <= camera.size())
 	{
-		char buffer[80];
 		int64 t = getTickCount();
 		stitcher.estimateTransform(images);
 		if (StitchImage::Status::OK == stitcher.composePanorama(stitched)) {
-			sprintf(buffer, "%.2fmsec", (getTickCount() - t) / getTickFrequency() * 1000);
+			CString buffer;
+			buffer.Format("%.2fmsec", (getTickCount() - t) / getTickFrequency() * 1000);
 			m_status.SetWindowText(buffer);
 			imageSize = Size(stitched.cols, stitched.rows);
 			imshow(STITCHED, stitched);
