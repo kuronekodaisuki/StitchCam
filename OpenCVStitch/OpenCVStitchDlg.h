@@ -68,4 +68,5 @@ public:
 	afx_msg void OnBnClickedCam3();
 	afx_msg void OnBnClickedCam4();
 	CButton m_start;
+	CStatic m_status;
 };

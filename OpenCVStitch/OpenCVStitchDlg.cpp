@@ -113,6 +113,7 @@ void COpenCVStitchDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_WIDE, m_qvga);
 	DDX_Control(pDX, IDC_SAVE, m_save);
 	DDX_Control(pDX, IDC_START, m_start);
+	DDX_Control(pDX, IDC_STATUS, m_status);
 }
 
 BEGIN_MESSAGE_MAP(COpenCVStitchDlg, CDialogEx)
@@ -327,7 +328,11 @@ void COpenCVStitchDlg::DoStitch()
 		imshow(camera[i].GetName(), image);
 		images.push_back(image);
 	}
+	int64 t = getTickCount();
 	if (StitchImage::Status::OK == stitcher.composePanorama(images, stitched)) {
+		char buffer[80];
+		sprintf(buffer, "%fmsec", (getTickCount() - t) / getTickFrequency() * 1000);
+		m_status.SetWindowText(buffer);
 		imshow(STITCHED, stitched);
 		if (writer.isOpened())
 		{
