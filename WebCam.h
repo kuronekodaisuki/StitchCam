@@ -47,7 +47,7 @@ public:
 public:
 	WebCam();
 	WebCam(const string& filename);
-	void SetName(char *name) {strncpy(this->name, name, 80);}
+	void SetName(const char *name) {strncpy(this->name, name, 80);}
 	char *GetName() {return name; }
 
 protected:
