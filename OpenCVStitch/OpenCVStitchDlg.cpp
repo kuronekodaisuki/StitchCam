@@ -112,17 +112,23 @@ void COpenCVStitchDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CAM4, m_cam4);
 	DDX_Control(pDX, IDC_WIDE, m_qvga);
 	DDX_Control(pDX, IDC_SAVE, m_save);
+	DDX_Control(pDX, IDC_START, m_start);
 }
 
 BEGIN_MESSAGE_MAP(COpenCVStitchDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_PREVIEW, &COpenCVStitchDlg::OnBnClickedPreview)
 	ON_BN_CLICKED(IDC_CARIBRATE, &COpenCVStitchDlg::OnBnClickedCaribrate)
 	ON_BN_CLICKED(IDC_STOP, &COpenCVStitchDlg::OnBnClickedStop)
 	ON_BN_CLICKED(IDC_START, &COpenCVStitchDlg::OnBnClickedStart)
 	ON_BN_CLICKED(IDC_FILE, &COpenCVStitchDlg::OnBnClickedFile)
+	ON_BN_CLICKED(IDC_CAM1, &COpenCVStitchDlg::OnBnClickedCam1)
+	ON_BN_CLICKED(IDC_CAM2, &COpenCVStitchDlg::OnBnClickedCam2)
+	ON_BN_CLICKED(IDC_CAM3, &COpenCVStitchDlg::OnBnClickedCam3)
+	ON_BN_CLICKED(IDC_CAM4, &COpenCVStitchDlg::OnBnClickedCam4)
 END_MESSAGE_MAP()
 
 CWnd *pDlg;
@@ -257,32 +263,211 @@ HCURSOR COpenCVStitchDlg::OnQueryDragIcon()
 }
 
 
+// カメラ開始
+void COpenCVStitchDlg::DoOpen()
+{
+	if (fileOpened)
+	{
+		return;
+	}
+	camera.clear();
+	for (int id = IDC_CAM1; id <= IDC_CAM4; id++)
+	{
+		CButton *item = (CButton*)GetDlgItem(id);
+		if (item->GetCheck() == BST_CHECKED)
+		{
+			char name[80], buffer[100];
+			bool res;
+			item->GetWindowText(name, 80);
+
+			WebCam cam = WebCam();
+			res = cam.open(id - IDC_CAM1);
+			if (res) {
+				if (m_qvga.GetCheck() == BST_CHECKED) {
+					res = cam.set(CV_CAP_PROP_FRAME_WIDTH, 320.0F);
+					res = cam.set(CV_CAP_PROP_FRAME_HEIGHT, 240.0F);
+				} else {
+					res = cam.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
+					res = cam.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
+				}
+				res = cam.set(CV_CAP_PROP_FPS, FPS);
+				res = cam.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
+
+				sprintf(buffer, "%d %s", id - IDC_CAM1 + 1, name);
+				cam.SetName(buffer);
+				camera.push_back(cam);
+			}
+		}
+	}
+}
+
+void COpenCVStitchDlg::DoPreview()
+{
+	for (size_t i = 0; i < camera.size(); i++)
+	{
+		Mat image;
+		camera[i] >> image;
+		if (image.empty() == false) {
+			imshow(camera[i].GetName(), image);
+		}
+	}
+}
+
+void COpenCVStitchDlg::DoStitch()
+{
+	
+	Mat stitched;
+	vector<Mat> images;
+
+	for (size_t i = 0; i < camera.size(); i++)
+	{
+		Mat image;
+		camera[i] >> image;
+
+		imshow(camera[i].GetName(), image);
+		images.push_back(image);
+	}
+	if (StitchImage::Status::OK == stitcher.composePanorama(images, stitched)) {
+		imshow(STITCHED, stitched);
+		if (writer.isOpened())
+		{
+			writer << stitched;
+		}
+	}
+	images.clear();
+	
+}
+
+void COpenCVStitchDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	switch (nIDEvent)
+	{
+	case TIMER_STITCH:
+		DoStitch();
+		break;
+	
+	case TIMER_PREVIEW:
+		DoPreview();
+		break;
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
+}
 
 void COpenCVStitchDlg::OnBnClickedPreview()
 {
-	// TODO: ここにコントロール通知ハンドラー コードを追加します。
+	DoOpen();
+	pTimer = SetTimer(TIMER_PREVIEW, 30, NULL);	// 30msec
 }
 
 
 void COpenCVStitchDlg::OnBnClickedCaribrate()
 {
-	// TODO: ここにコントロール通知ハンドラー コードを追加します。
+	DoOpen();
+	Mat stitched;
+	vector<Mat> images;
+	// 
+	for (size_t i = 0; i < camera.size(); i++)
+	{
+		Mat image;
+		camera[i] >> image;
+		if (image.empty() == false) {
+			imshow(camera[i].GetName(), image);
+			images.push_back(image);
+		}
+	}
+	if (2 <= camera.size())
+	{
+		stitcher.estimateTransform(images);
+		if (StitchImage::Status::OK == stitcher.composePanorama(images, stitched)) {
+			imageSize = Size(stitched.cols, stitched.rows);
+			imshow(STITCHED, stitched);
+			CWnd *start = GetDlgItem(IDC_START);
+			start->EnableWindow();
+		} else {
+			MessageBox("内部処理でのエラー", "キャリブレート");
+		}
+	}
+	else
+	{
+		MessageBox("カメラが少ないためキャリブレートできません");
+	}
 }
 
 
 void COpenCVStitchDlg::OnBnClickedStart()
 {
-	// TODO: ここにコントロール通知ハンドラー コードを追加します。
+	if (2 <= camera.size())
+	{
+		if (m_save.GetCheck() == BST_CHECKED)
+		{
+			static TCHAR BASED_CODE szFilter[] = _T("AVI (*.avi)|*.avi|All Files (*.*)|*.*||");
+
+			CFileDialog dlg(FALSE, "avi", "save.avi", OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter);
+			if (dlg.DoModal() == IDOK)
+			{
+				int fourcc = CV_FOURCC('I','Y','U','V');	//CV_FOURCC('M','J','P','G');	// Motion JPEG
+
+				CString filename = dlg.GetFileName();
+				if (writer.open((LPCSTR)filename, fourcc, FPS / 2, imageSize) != true)
+				{
+					MessageBox("Cant save");
+				}
+			}
+			else
+			{
+				return;
+			}
+		}
+		pTimer = SetTimer(TIMER_STITCH, 30, NULL);	// 30msec
+	}
+	else
+	{
+		MessageBox("カメラが少ないためステッチできません");
+	}
 }
 
 
 void COpenCVStitchDlg::OnBnClickedStop()
 {
-	// TODO: ここにコントロール通知ハンドラー コードを追加します。
+	KillTimer(pTimer);
+	destroyAllWindows();
+	for (size_t i = 0; i < camera.size(); i++)
+	{
+	//	camera[i].release();
+	}
+	if (writer.isOpened())
+	{
+		writer.release();
+	}
 }
 
 
 void COpenCVStitchDlg::OnBnClickedFile()
 {
 	// TODO: ここにコントロール通知ハンドラー コードを追加します。
+}
+
+
+void COpenCVStitchDlg::OnBnClickedCam1()
+{
+	m_start.EnableWindow(FALSE);
+}
+
+
+void COpenCVStitchDlg::OnBnClickedCam2()
+{
+	m_start.EnableWindow(FALSE);
+}
+
+
+void COpenCVStitchDlg::OnBnClickedCam3()
+{
+	m_start.EnableWindow(FALSE);
+}
+
+
+void COpenCVStitchDlg::OnBnClickedCam4()
+{
+	m_start.EnableWindow(FALSE);
 }

@@ -40,6 +40,10 @@ protected:
 	UINT_PTR pTimer;
 	bool fileOpened;
 
+	void DoOpen();
+	void DoStitch();
+	void DoPreview();
+
 	// 生成された、メッセージ割り当て関数
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
@@ -53,9 +57,15 @@ public:
 	CButton m_cam4;
 	CButton m_qvga;
 	CButton m_save;
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedPreview();
 	afx_msg void OnBnClickedCaribrate();
 	afx_msg void OnBnClickedStop();
 	afx_msg void OnBnClickedStart();
 	afx_msg void OnBnClickedFile();
+	afx_msg void OnBnClickedCam1();
+	afx_msg void OnBnClickedCam2();
+	afx_msg void OnBnClickedCam3();
+	afx_msg void OnBnClickedCam4();
+	CButton m_start;
 };
