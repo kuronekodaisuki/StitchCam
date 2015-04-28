@@ -329,7 +329,7 @@ void COpenCVStitchDlg::DoStitch()
 	int64 t = getTickCount();
 	if (StitchImage::Status::OK == stitcher.composePanorama(images, stitched)) {
 		char buffer[80];
-		sprintf(buffer, "%fmsec", (getTickCount() - t) / getTickFrequency() * 1000);
+		sprintf(buffer, "%.2fmsec", (getTickCount() - t) / getTickFrequency() * 1000);
 		m_status.SetWindowText(buffer);
 		imshow(STITCHED, stitched);
 		if (writer.isOpened())
@@ -381,8 +381,12 @@ void COpenCVStitchDlg::OnBnClickedCaribrate()
 	}
 	if (2 <= camera.size())
 	{
+		char buffer[80];
+		int64 t = getTickCount();
 		stitcher.estimateTransform(images);
 		if (StitchImage::Status::OK == stitcher.composePanorama(images, stitched)) {
+			sprintf(buffer, "%.2fmsec", (getTickCount() - t) / getTickFrequency() * 1000);
+			m_status.SetWindowText(buffer);
 			imageSize = Size(stitched.cols, stitched.rows);
 			imshow(STITCHED, stitched);
 			CWnd *start = GetDlgItem(IDC_START);
