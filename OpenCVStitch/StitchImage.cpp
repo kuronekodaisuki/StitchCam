@@ -48,7 +48,7 @@
 using namespace std;
 using namespace cv;
 //using namespace cv::detail;
-using namespace cv::gpu;
+//using namespace cv::gpu;
 
 StitchImage StitchImage::createDefault(bool try_use_gpu)
 {
@@ -86,8 +86,7 @@ StitchImage StitchImage::createDefault(bool try_use_gpu)
     }
 
     stitcher.setExposureCompensator(new detail::BlocksGainCompensator());
-    //stitcher.setBlender(new detail::MultiBandBlender(try_use_gpu));
-	stitcher.setBlender(new detail::MyBlender());
+    stitcher.setBlender(new detail::MyBlender());
 
     return stitcher;
 }
