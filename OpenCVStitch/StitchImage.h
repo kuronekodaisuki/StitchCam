@@ -9,6 +9,8 @@
 #include <opencv2/stitching/detail/blenders.hpp>
 #include <opencv2/stitching/detail/camera.hpp>
 
+#include "../MyBlender.h"
+
 using namespace cv;
 
 class StitchImage

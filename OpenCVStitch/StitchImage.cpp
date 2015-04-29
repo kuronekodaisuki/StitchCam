@@ -48,7 +48,7 @@
 using namespace std;
 using namespace cv;
 //using namespace cv::detail;
-//using namespace cv::gpu;
+using namespace cv::gpu;
 
 StitchImage StitchImage::createDefault(bool try_use_gpu)
 {
@@ -86,7 +86,8 @@ StitchImage StitchImage::createDefault(bool try_use_gpu)
     }
 
     stitcher.setExposureCompensator(new detail::BlocksGainCompensator());
-    stitcher.setBlender(new detail::MultiBandBlender(try_use_gpu));
+    //stitcher.setBlender(new detail::MultiBandBlender(try_use_gpu));
+	stitcher.setBlender(new detail::MyBlender());
 
     return stitcher;
 }
@@ -286,8 +287,8 @@ StitchImage::Status StitchImage::composePanorama(InputArray images, OutputArray 
         // Compensate exposure
         exposure_comp_->apply((int)img_idx, corners[img_idx], img_warped, mask_warped);
 
-        img_warped.convertTo(img_warped_s, CV_16S);
-        img_warped.release();
+        //img_warped.convertTo(img_warped_s, CV_16S);
+        //img_warped.release();
         img.release();
         mask.release();
 
@@ -304,17 +305,17 @@ StitchImage::Status StitchImage::composePanorama(InputArray images, OutputArray 
         }
 
         // Blend the current image
-        blender_->feed(img_warped_s, mask_warped, corners[img_idx]);
+        blender_->feed(img_warped, mask_warped, corners[img_idx]);
     }
 
     Mat result, result_mask;
-    blender_->blend(result, result_mask);
+    blender_->blend(pano_, result_mask);
 
     LOGLN("Compositing, time: " << ((getTickCount() - t) / getTickFrequency()) << " sec");
 
     // Preliminary result is in CV_16SC3 format, but all values are in [0,255] range,
     // so convert it to avoid user confusing
-    result.convertTo(pano_, CV_8U);
+    //result.convertTo(pano_, CV_8U);
 
     return OK;
 }
