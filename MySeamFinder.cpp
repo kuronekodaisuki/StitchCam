@@ -66,7 +66,7 @@ void MySeamFinder::resolveConflicts(
             const int c[] = {c1, c2};
             const int l[] = {l1, l2};
 #ifdef	_OPENMP
-#pragma omp parallel for
+			#pragma omp parallel for
 #endif
             for (int i = 0; i < 2; ++i)
             {
@@ -112,7 +112,7 @@ void MySeamFinder::resolveConflicts(
     int dx1 = unionTl_.x - tl1.x, dy1 = unionTl_.y - tl1.y;
     int dx2 = unionTl_.x - tl2.x, dy2 = unionTl_.y - tl2.y;
 #ifdef	_OPENMP
-#pragma omp parallel for
+	#pragma omp parallel for
 #endif
     for (int y = 0; y < mask2.rows; ++y)
     {
@@ -124,7 +124,7 @@ void MySeamFinder::resolveConflicts(
         }
     }
 #ifdef	_OPENMP
-#pragma omp parallel for
+	#pragma omp parallel for
 #endif
     for (int y = 0; y < mask1.rows; ++y)
     {
@@ -244,7 +244,7 @@ void MySeamFinder::findComponents()
     brs_.clear();
     contours_.clear();
 #ifdef	_OPENMP
-#pragma omp parallel for
+	#pragma omp parallel for
 #endif
     for (int y = 0; y < unionSize_.height; ++y)
     {
@@ -581,7 +581,7 @@ void MySeamFinder::computeCosts(
 
     costV.create(roi.height, roi.width+1);
 #ifdef	_OPENMP
-#pragma omp parallel for
+	#pragma omp parallel for
 #endif
     for (int y = roi.y; y < roi.br().y; ++y)
     {
@@ -607,7 +607,7 @@ void MySeamFinder::computeCosts(
 
     costH.create(roi.height+1, roi.width);
 #ifdef	_OPENMP
-#pragma omp parallel for
+	#pragma omp parallel for
 #endif
     for (int y = roi.y; y < roi.br().y+1; ++y)
     {
