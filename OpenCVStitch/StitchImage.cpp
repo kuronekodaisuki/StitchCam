@@ -1,7 +1,3 @@
-#include "StdAfx.h"
-#include "StitchImage.h"
-
-
 /*M///////////////////////////////////////////////////////////////////////////////////////
 //
 //  IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
@@ -44,19 +40,26 @@
 //
 //M*/
 
+#include "StdAfx.h"
+#include "StitchImage.h"
+
+#define USE_MYBLENDER
+
+static double work_megapix = 0.08;	// 0.6
+static double seam_megapix = 0.08;	// 0.1
+static float conf_thresh = 0.5f;	// 1.0f
 
 using namespace std;
 using namespace cv;
-//using namespace cv::detail;
-//using namespace cv::gpu;
+
 
 StitchImage StitchImage::createDefault(bool try_use_gpu)
 {
     StitchImage stitcher;
-    stitcher.setRegistrationResol(0.6);
-    stitcher.setSeamEstimationResol(0.1);
+    stitcher.setRegistrationResol(work_megapix);	// changed
+    stitcher.setSeamEstimationResol(seam_megapix);	//  changed
     stitcher.setCompositingResol(ORIG_RESOL);
-    stitcher.setPanoConfidenceThresh(1);
+    stitcher.setPanoConfidenceThresh(conf_thresh);	// changed
     stitcher.setWaveCorrection(true);
     stitcher.setWaveCorrectKind(detail::WAVE_CORRECT_HORIZ);
     stitcher.setFeaturesMatcher(new detail::BestOf2NearestMatcher(try_use_gpu));
@@ -71,7 +74,7 @@ StitchImage StitchImage::createDefault(bool try_use_gpu)
         stitcher.setFeaturesFinder(new detail::OrbFeaturesFinder());
 #endif
         stitcher.setWarper(new SphericalWarperGpu());
-        stitcher.setSeamFinder(new detail::GraphCutSeamFinderGpu());
+		stitcher.setSeamFinder(new detail::MySeamFinder());	// optimised from GraphCutSeamFinder
     }
     else
 #endif
@@ -85,9 +88,12 @@ StitchImage StitchImage::createDefault(bool try_use_gpu)
         stitcher.setSeamFinder(new detail::GraphCutSeamFinder(detail::GraphCutSeamFinderBase::COST_COLOR));
     }
 
-    stitcher.setExposureCompensator(new detail::BlocksGainCompensator());
-    stitcher.setBlender(new detail::MyBlender());
-
+    stitcher.setExposureCompensator(new detail::MyCompensator(false)); // optimized from detail::GainCompensator()
+#ifdef USE_MYBLENDER
+	stitcher.setBlender(new detail::MyBlender(try_use_gpu));
+#else
+    stitcher.setBlender(new detail::MultiBandBlender());
+#endif
     return stitcher;
 }
 
@@ -109,7 +115,8 @@ StitchImage::Status StitchImage::estimateTransform(InputArray images, const vect
         return status;
 
     estimateCameraParams();
-
+	cameras_save = cameras_;	// save for compose
+	warped_image_scale_save = warped_image_scale_;	// save for compose
     return OK;
 }
 
@@ -124,6 +131,8 @@ StitchImage::Status StitchImage::composePanorama(OutputArray pano)
 StitchImage::Status StitchImage::composePanorama(InputArray images, OutputArray pano)
 {
     LOGLN("Warping images (auxiliary)... ");
+
+	restore(); // restore params
 
     vector<Mat> imgs;
     images.getMatVector(imgs);
@@ -275,6 +284,7 @@ StitchImage::Status StitchImage::composePanorama(InputArray images, OutputArray 
         Mat K;
         cameras_[img_idx].K().convertTo(K, CV_32F);
 
+		/////////////////////////////////////////////////////////////////////////////////////
         // Warp the current image
         w->warp(img, K, cameras_[img_idx].R, INTER_LINEAR, BORDER_REFLECT, img_warped);
 
@@ -283,9 +293,10 @@ StitchImage::Status StitchImage::composePanorama(InputArray images, OutputArray 
         mask.setTo(Scalar::all(255));
         w->warp(mask, K, cameras_[img_idx].R, INTER_NEAREST, BORDER_CONSTANT, mask_warped);
 
+		/////////////////////////////////////////////////////////////////////////////////////
         // Compensate exposure
         exposure_comp_->apply((int)img_idx, corners[img_idx], img_warped, mask_warped);
-
+#ifdef USE_MYBLENDER
         //img_warped.convertTo(img_warped_s, CV_16S);
         //img_warped.release();
         img.release();
@@ -303,6 +314,7 @@ StitchImage::Status StitchImage::composePanorama(InputArray images, OutputArray 
             is_blender_prepared = true;
         }
 
+		/////////////////////////////////////////////////////////////////////////////////////
         // Blend the current image
         blender_->feed(img_warped, mask_warped, corners[img_idx]);
     }
@@ -311,11 +323,37 @@ StitchImage::Status StitchImage::composePanorama(InputArray images, OutputArray 
     blender_->blend(pano_, result_mask);
 
     LOGLN("Compositing, time: " << ((getTickCount() - t) / getTickFrequency()) << " sec");
+#else
+		img_warped.convertTo(img_warped_s, CV_16S);
+        img_warped.release();
+        img.release();
+        mask.release();
+
+        // Make sure seam mask has proper size
+        dilate(masks_warped[img_idx], dilated_mask, Mat());
+        resize(dilated_mask, seam_mask, mask_warped.size());
+
+        mask_warped = seam_mask & mask_warped;
+
+        if (!is_blender_prepared)
+        {
+            blender_->prepare(corners, sizes);
+            is_blender_prepared = true;
+        }
+
+        // Blend the current image
+        blender_->feed(img_warped_s, mask_warped, corners[img_idx]);
+    }
+
+    Mat result, result_mask;
+    blender_->blend(result, result_mask);
+
+    LOGLN("Compositing, time: " << ((getTickCount() - t) / getTickFrequency()) << " sec");
 
     // Preliminary result is in CV_16SC3 format, but all values are in [0,255] range,
     // so convert it to avoid user confusing
-    //result.convertTo(pano_, CV_8U);
-
+    result.convertTo(pano_, CV_8U);
+#endif
     return OK;
 }
 

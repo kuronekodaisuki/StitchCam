@@ -10,6 +10,8 @@
 #include <opencv2/stitching/detail/camera.hpp>
 
 #include "../MyBlender.h"
+#include "../MySeamFinder.h"
+#include "MyCompensator.h"
 
 using namespace cv;
 
@@ -93,6 +95,11 @@ public:
     double workScale() const { return work_scale_; }
 
 	StitchImage() {}
+	
+	void restore()	{
+		cameras_ = cameras_save; 
+		warped_image_scale_ = warped_image_scale_save;
+	}
 
 private:
 
@@ -122,9 +129,11 @@ private:
     std::vector<cv::Mat> seam_est_imgs_;
     std::vector<int> indices_;
     std::vector<detail::CameraParams> cameras_;
+	std::vector<detail::CameraParams> cameras_save;	// saved camera param
     double work_scale_;
     double seam_scale_;
     double seam_work_aspect_;
     double warped_image_scale_;
+	double warped_image_scale_save; // saved scale
 };
 

@@ -190,7 +190,7 @@ BOOL COpenCVStitchDlg::OnInitDialog()
 
 	// TODO: ‰Šú‰»‚ğ‚±‚±‚É’Ç‰Á‚µ‚Ü‚·B
 	int count = 0;
-	if (cudaSuccess == cudaGetDeviceCount(&count) && 0 < count)
+	if ((count = gpu::getCudaEnabledDeviceCount()) > 0)
 	{
 		stitcher = StitchImage::createDefault(true);	// CUDA‚ªg—p‚Å‚«‚éê‡
 		CString buffer;
@@ -398,7 +398,7 @@ void COpenCVStitchDlg::OnBnClickedCaribrate()
 	{
 		int64 t = getTickCount();
 		stitcher.estimateTransform(images);
-		if (StitchImage::Status::OK == stitcher.composePanorama(stitched)) {
+		if (StitchImage::Status::OK == stitcher.composePanorama(images, stitched)) {
 			CString buffer;
 			buffer.Format("%.2fmsec", (getTickCount() - t) / getTickFrequency() * 1000);
 			m_status.SetWindowText(buffer);
