@@ -88,7 +88,7 @@ StitchImage StitchImage::createDefault(bool try_use_gpu)
         stitcher.setSeamFinder(new detail::GraphCutSeamFinder(detail::GraphCutSeamFinderBase::COST_COLOR));
     }
 
-    stitcher.setExposureCompensator(new detail::MyCompensator(false)); // optimized from detail::GainCompensator()
+    stitcher.setExposureCompensator(new detail::MyCompensator(try_use_gpu)); // optimized from detail::GainCompensator()
 #ifdef USE_MYBLENDER
 	stitcher.setBlender(new detail::MyBlender(try_use_gpu));
 #else

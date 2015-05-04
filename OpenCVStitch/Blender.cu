@@ -30,7 +30,7 @@ namespace detail {
 		dim3 threads(16, 16);	// 256 threads yealds better performance
 		dim3 blocks(image.cols / threads.x, image.rows / threads.y);
 		kernelFeed<<<blocks, threads>>>(image.rows, image.cols, 
-			gpuDst_.ptr<uchar>(dy), image.ptr<uchar>(), mask.ptr<uchar>(), 
+			gpuDst_.ptr<uchar>(dy) + dx * 3, image.ptr<uchar>(), mask.ptr<uchar>(), 
 			gpuDst_.step, image.step, mask.step);
 	}
 
