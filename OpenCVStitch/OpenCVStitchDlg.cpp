@@ -303,14 +303,15 @@ void COpenCVStitchDlg::DoOpen()
 				if (m_qvga.GetCheck() == BST_CHECKED) {
 					res = cam.set(CV_CAP_PROP_FRAME_WIDTH, 320.0F);
 					res = cam.set(CV_CAP_PROP_FRAME_HEIGHT, 240.0F);
+					buffer.Format("%d %s QVGA", id - IDC_CAM1 + 1, name);
 				} else {
 					res = cam.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
 					res = cam.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
+					buffer.Format("%d %s", id - IDC_CAM1 + 1, name);
 				}
 				res = cam.set(CV_CAP_PROP_FPS, FPS);
 				res = cam.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
 
-				buffer.Format("%d %s", id - IDC_CAM1 + 1, name);
 				cam.SetName((LPCSTR)buffer);
 				camera.push_back(cam);
 			}
@@ -343,17 +344,25 @@ void COpenCVStitchDlg::DoStitch()
 		imshow(camera[i].GetName(), image);
 		images.push_back(image);
 	}
-	int64 t = getTickCount();
-	if (StitchImage::Status::OK == stitcher.composePanorama(images, stitched)) {
-		UpdateValue((getTickCount() - t) / getTickFrequency() * 1000);
-		imshow(STITCHED, stitched);
-		if (writer.isOpened())
-		{
-			writer << stitched;
+	if (2 <= camera.size())
+	{
+		int64 t = getTickCount();
+		if (StitchImage::Status::OK == stitcher.composePanorama(images, stitched)) {
+			UpdateValue((getTickCount() - t) / getTickFrequency() * 1000);
+			imshow(STITCHED, stitched);
+			if (writer.isOpened())
+			{
+				writer << stitched;
+			}
+		} else {
+			MessageBox("内部処理でのエラー", "キャリブレート");
 		}
+		images.clear();
 	}
-	images.clear();
-	
+	else
+	{
+		MessageBox("カメラが少ないためキャリブレートできません");
+	}	
 }
 
 void COpenCVStitchDlg::OnTimer(UINT_PTR nIDEvent)

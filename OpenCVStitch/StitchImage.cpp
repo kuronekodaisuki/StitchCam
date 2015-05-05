@@ -44,6 +44,7 @@
 #include "StitchImage.h"
 
 #define USE_MYBLENDER
+#define USE_GPU
 
 static double work_megapix = 0.08;	// 0.6
 static double seam_megapix = 0.08;	// 0.1
@@ -93,6 +94,10 @@ StitchImage StitchImage::createDefault(bool try_use_gpu)
 	stitcher.setBlender(new detail::MyBlender(try_use_gpu));
 #else
     stitcher.setBlender(new detail::MultiBandBlender());
+#endif
+
+#ifdef USE_GPU
+	stitcher.blender_gpu = new detail::MyBlender(true);
 #endif
     return stitcher;
 }
@@ -249,6 +254,31 @@ StitchImage::Status StitchImage::composePanorama(InputArray images, OutputArray 
 
             // Update warped image scale
             warped_image_scale_ *= static_cast<float>(compose_work_aspect);
+#ifdef USE_GPU
+			warper_gpu = new WARPER((float)warped_image_scale_);
+            // Update corners and sizes
+            for (size_t i = 0; i < imgs_.size(); ++i)
+            {
+                // Update intrinsics
+                cameras_[i].focal *= compose_work_aspect;
+                cameras_[i].ppx *= compose_work_aspect;
+                cameras_[i].ppy *= compose_work_aspect;
+
+                // Update corner and size
+                Size sz = full_img_sizes_[i];
+                if (std::abs(compose_scale - 1) > 1e-1)
+                {
+                    sz.width = cvRound(full_img_sizes_[i].width * compose_scale);
+                    sz.height = cvRound(full_img_sizes_[i].height * compose_scale);
+                }
+
+                Mat K;
+                cameras_[i].K().convertTo(K, CV_32F);
+                Rect roi = warper_gpu->warpRoi(sz, K, cameras_[i].R);
+                corners[i] = roi.tl();
+                sizes[i] = roi.size();
+            }
+#else
             w = warper_->create((float)warped_image_scale_);
 
             // Update corners and sizes
@@ -273,6 +303,7 @@ StitchImage::Status StitchImage::composePanorama(InputArray images, OutputArray 
                 corners[i] = roi.tl();
                 sizes[i] = roi.size();
             }
+#endif
         }
         if (std::abs(compose_scale - 1) > 1e-1)
             resize(full_img, img, Size(), compose_scale, compose_scale);
@@ -283,7 +314,22 @@ StitchImage::Status StitchImage::composePanorama(InputArray images, OutputArray 
 
         Mat K;
         cameras_[img_idx].K().convertTo(K, CV_32F);
+#ifdef USE_GPU
+		gpu::GpuMat img_gpu, img_warped_gpu, mask_gpu, mask_warped_gpu;
+		img_gpu.upload(img);
+		/////////////////////////////////////////////////////////////////////////////////////
+        // Warp the current image
+        warper_gpu->warp(img_gpu, K, cameras_[img_idx].R, INTER_LINEAR, BORDER_REFLECT, img_warped_gpu);
 
+        // Warp the current image mask
+        mask_gpu.create(img_size, CV_8U);
+        mask_gpu.setTo(Scalar::all(255));
+        warper_gpu->warp(mask_gpu, K, cameras_[img_idx].R, INTER_NEAREST, BORDER_CONSTANT, mask_warped_gpu);
+
+		/////////////////////////////////////////////////////////////////////////////////////
+        // Compensate exposure
+        //exposure_comp_->apply((int)img_idx, corners[img_idx], img_warped, mask_warped);
+#else
 		/////////////////////////////////////////////////////////////////////////////////////
         // Warp the current image
         w->warp(img, K, cameras_[img_idx].R, INTER_LINEAR, BORDER_REFLECT, img_warped);
@@ -296,12 +342,29 @@ StitchImage::Status StitchImage::composePanorama(InputArray images, OutputArray 
 		/////////////////////////////////////////////////////////////////////////////////////
         // Compensate exposure
         exposure_comp_->apply((int)img_idx, corners[img_idx], img_warped, mask_warped);
+#endif
 #ifdef USE_MYBLENDER
         //img_warped.convertTo(img_warped_s, CV_16S);
         //img_warped.release();
         img.release();
         mask.release();
+#ifdef USE_GPU
+		img_gpu.release();
+		mask_gpu.release();
+		if (!is_blender_prepared)
+        {
+            blender_gpu->prepare(corners, sizes);
+            is_blender_prepared = true;
+        }
 
+		/////////////////////////////////////////////////////////////////////////////////////
+        // Blend the current image
+        blender_gpu->feed(img_warped_gpu, mask_warped_gpu, corners[img_idx]);
+	}
+
+    Mat result_mask;
+    blender_gpu->blend(pano_, result_mask);
+#else
         // Make sure seam mask has proper size
         dilate(masks_warped[img_idx], dilated_mask, Mat());
         resize(dilated_mask, seam_mask, mask_warped.size());
@@ -321,7 +384,7 @@ StitchImage::Status StitchImage::composePanorama(InputArray images, OutputArray 
 
     Mat result, result_mask;
     blender_->blend(pano_, result_mask);
-
+#endif
     LOGLN("Compositing, time: " << ((getTickCount() - t) / getTickFrequency()) << " sec");
 #else
 		img_warped.convertTo(img_warped_s, CV_16S);

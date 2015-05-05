@@ -15,6 +15,8 @@
 
 using namespace cv;
 
+#define WARPER	detail::CylindricalWarperGpu
+
 class StitchImage
 {
 public:
@@ -96,11 +98,6 @@ public:
 
 	StitchImage() {}
 	
-	void restore()	{
-		cameras_ = cameras_save; 
-		warped_image_scale_ = warped_image_scale_save;
-	}
-
 private:
 
     Status matchImages();
@@ -129,11 +126,20 @@ private:
     std::vector<cv::Mat> seam_est_imgs_;
     std::vector<int> indices_;
     std::vector<detail::CameraParams> cameras_;
-	std::vector<detail::CameraParams> cameras_save;	// saved camera param
+
     double work_scale_;
     double seam_scale_;
     double seam_work_aspect_;
     double warped_image_scale_;
+
+	void restore()	{
+		cameras_ = cameras_save; 
+		warped_image_scale_ = warped_image_scale_save;
+	}
+
+	std::vector<detail::CameraParams> cameras_save;	// saved camera param
 	double warped_image_scale_save; // saved scale
+	WARPER *warper_gpu;
+	detail::MyBlender *blender_gpu;
 };
 
