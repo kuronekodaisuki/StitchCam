@@ -115,6 +115,8 @@ public:
 
 	StitchImage() {}
 
+    std::vector<detail::ImageFeatures> features_;
+
 private:
     Status matchImages();
     void estimateCameraParams();
@@ -145,7 +147,6 @@ private:
 
     std::vector<std::vector<cv::Rect> > rois_;
     std::vector<cv::Size> full_img_sizes_;
-    std::vector<detail::ImageFeatures> features_;
     std::vector<detail::MatchesInfo> pairwise_matches_;
     std::vector<int> indices_;
     std::vector<detail::CameraParams> cameras_;
