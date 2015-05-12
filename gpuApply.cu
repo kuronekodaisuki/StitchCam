@@ -1,10 +1,10 @@
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
+#include <cuda_runtime.h>
+#include <device_launch_parameters.h>
 #include <opencv2/gpu/device/saturate_cast.hpp>
 
 #include "MyCompensator.h"
 
-#include <stdio.h>
+//#include <stdio.h>
 
 using namespace std;
 
@@ -15,7 +15,7 @@ namespace device {
 //////////////////////////////////////////////////////////////////////////
 // Exposure compensate kernel
 template<typename T>
-__global__ void applyKernel(int rows, int cols, T *ptr, int step, double scale)
+__global__ void applyKernel(int rows, int cols, T *ptr, int step, float scale)
 {
 	int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;

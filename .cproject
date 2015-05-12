@@ -178,6 +178,7 @@
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.871053135;cdt.managedbuild.config.gnu.exe.debug.871053135.;nvcc.compiler.base.201947034;nvcc.compiler.input.cu.173591675">
@@ -189,13 +190,16 @@
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.909893455;cdt.managedbuild.config.gnu.exe.release.909893455.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.1942971779;cdt.managedbuild.tool.gnu.c.compiler.input.2084764093">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.871053135;cdt.managedbuild.config.gnu.exe.debug.871053135.;nvcc.compiler.base.201947034;nvcc.compiler.input.c.470616172">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.nvidia.cuda.ide.build.NVCCPerProjectProfile"/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.871053135;cdt.managedbuild.config.gnu.exe.debug.871053135.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1211572476;cdt.managedbuild.tool.gnu.cpp.compiler.input.2076503016">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.871053135">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.871053135;cdt.managedbuild.config.gnu.exe.debug.871053135.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1211572476;cdt.managedbuild.tool.gnu.cpp.compiler.input.2076503016">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.871053135;cdt.managedbuild.config.gnu.exe.debug.871053135.;nvcc.compiler.base.201947034;nvcc.compiler.input.c.470616172">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.nvidia.cuda.ide.build.NVCCPerProjectProfile"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.871053135;cdt.managedbuild.config.gnu.exe.debug.871053135.;cdt.managedbuild.tool.gnu.cpp.compiler.base.920097607;cdt.managedbuild.tool.gnu.cpp.compiler.input.879422985">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.871053135;cdt.managedbuild.config.gnu.exe.debug.871053135.;nvcc.compiler.base.201947034;nvcc.compiler.input.cpp.1447198745">
@@ -204,6 +208,8 @@
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.909893455;cdt.managedbuild.config.gnu.exe.release.909893455.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.114041074;cdt.managedbuild.tool.gnu.cpp.compiler.input.1281076645">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.871053135;cdt.managedbuild.config.gnu.exe.debug.871053135.;cdt.managedbuild.tool.gnu.c.compiler.base.482450868;cdt.managedbuild.tool.gnu.c.compiler.input.2073631788">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>

@@ -25,9 +25,6 @@ public:
 protected:
 	bool use_gpu;
 	gpu::GpuMat gpuDst_;
-
-	void cudaFeed(const gpu::GpuMat &image, const gpu::GpuMat &mask, int dx, int dy); // cuda version feed
-	void cudaFeed(const Mat &img, const Mat &mask, int dx, int dy);	// cuda version feed
 };
 
 } //namespace cv {

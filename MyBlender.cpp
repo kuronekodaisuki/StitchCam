@@ -8,6 +8,9 @@
 namespace cv {
 namespace detail {
 
+void cudaFeed(const gpu::GpuMat &image, const gpu::GpuMat &mask, gpu::GpuMat &dst, int dx, int dy); // cuda version feed
+void cudaFeed(const Mat &img, const Mat &mask, gpu::GpuMat &dst, int dx, int dy);	// cuda version feed
+
 MyBlender::MyBlender(int try_gpu)
 {
 	use_gpu = false;
@@ -43,7 +46,7 @@ void MyBlender::feed(const Mat &img, const Mat &mask, Point tl)
 
 	if (use_gpu)
 	{
-		cudaFeed(img, mask, dx, dy);
+		cudaFeed(img, mask, gpuDst_, dx, dy);
 	}
 	else
 	{
@@ -74,7 +77,7 @@ void MyBlender::feed(const gpu::GpuMat &img, const gpu::GpuMat &mask, Point tl)
     int dx = tl.x - dst_roi_.x;
     int dy = tl.y - dst_roi_.y;
 
-	cudaFeed(img, mask, dx, dy);
+	cudaFeed(img, mask, gpuDst_, dx, dy);
 }
 
 void MyBlender::blend(Mat &dst, Mat &dst_mask)
