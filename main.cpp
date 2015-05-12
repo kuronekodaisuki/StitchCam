@@ -75,12 +75,12 @@ int main(int argc, char *aargv[])
 			res = cam0.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
 			res = cam0.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
 			res = cam0.set(CV_CAP_PROP_FPS, FPS);
-			//res = cam0.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
+			res = cam0.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
 			res = cam1.open(CV_CAP_V4L2 + 1);
 			res = cam1.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
 			res = cam1.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
 			res = cam1.set(CV_CAP_PROP_FPS, FPS);
-			//res = cam1.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
+			res = cam1.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
 
 			for (bool loop = true; loop; )
 			{

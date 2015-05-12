@@ -10,6 +10,8 @@
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="nvcc.errorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.VCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
@@ -63,7 +65,27 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.871053135.566398150" name="gpuApply.cu" rcbsApplicability="disable" resourcePath="gpuApply.cu" toolsToInvoke="">
+					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.871053135.704843143" name="Blender.cu" rcbsApplicability="disable" resourcePath="Blender.cu" toolsToInvoke="nvcc.compiler.base.338489345">
+						<tool id="nvcc.compiler.base.338489345" name="NVCC Compiler" superClass="nvcc.compiler.base">
+							<option id="nvcc.compiler.deviceDebug.747682198" superClass="nvcc.compiler.deviceDebug" value="true" valueType="boolean"/>
+							<option id="nvcc.compiler.option.level.349504784" superClass="nvcc.compiler.option.level" value="true" valueType="boolean"/>
+							<option defaultValue="nvcc.compiler.optimization.level.none" id="nvcc.compiler.optimization.level.1743825637" superClass="nvcc.compiler.optimization.level" valueType="enumerated"/>
+							<option id="nvcc.compiler.pic.1735819817" superClass="nvcc.compiler.pic"/>
+							<inputType id="nvcc.compiler.input.cu.881527090" superClass="nvcc.compiler.input.cu"/>
+							<inputType id="nvcc.compiler.input.cpp.223195043" superClass="nvcc.compiler.input.cpp"/>
+							<inputType id="nvcc.compiler.input.c.1684375610" superClass="nvcc.compiler.input.c"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.871053135.566398150" name="gpuApply.cu" rcbsApplicability="disable" resourcePath="gpuApply.cu" toolsToInvoke="nvcc.compiler.base.1188278236">
+						<tool id="nvcc.compiler.base.1188278236" name="NVCC Compiler" superClass="nvcc.compiler.base">
+							<option id="nvcc.compiler.deviceDebug.19548992" name="Generate device debug information (-G)" superClass="nvcc.compiler.deviceDebug" value="true" valueType="boolean"/>
+							<option id="nvcc.compiler.option.level.162542338" name="Generate host debug information (-g)" superClass="nvcc.compiler.option.level" value="true" valueType="boolean"/>
+							<option defaultValue="nvcc.compiler.optimization.level.none" id="nvcc.compiler.optimization.level.140624904" name="Optimization Level" superClass="nvcc.compiler.optimization.level" valueType="enumerated"/>
+							<option id="nvcc.compiler.pic.610767418" name="Position Independent Code (-fPIC)" superClass="nvcc.compiler.pic"/>
+							<inputType id="nvcc.compiler.input.cu.1484452527" superClass="nvcc.compiler.input.cu"/>
+							<inputType id="nvcc.compiler.input.cpp.104351038" superClass="nvcc.compiler.input.cpp"/>
+							<inputType id="nvcc.compiler.input.c.1807749785" superClass="nvcc.compiler.input.c"/>
+						</tool>
 						<tool customBuildStep="true" id="org.eclipse.cdt.managedbuilder.ui.rcbs.1459745863" name="Resource Custom Build Step">
 							<inputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.inputtype.1787577956" name="Resource Custom Build Step Input Type">
 								<additionalInput kind="additionalinputdependency" paths=""/>
