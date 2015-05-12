@@ -141,6 +141,23 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="cdt.managedbuild.config.gnu.exe.release.909893455.1215066165" name="Blender.cu" rcbsApplicability="disable" resourcePath="Blender.cu" toolsToInvoke="nvcc.compiler.base.1631557013">
+						<tool id="nvcc.compiler.base.1631557013" name="NVCC Compiler" superClass="nvcc.compiler.base">
+							<option id="nvcc.compiler.deviceDebug.2032496545" name="Generate device debug information (-G)" superClass="nvcc.compiler.deviceDebug"/>
+							<option id="nvcc.compiler.option.level.63860235" name="Generate host debug information (-g)" superClass="nvcc.compiler.option.level"/>
+							<option defaultValue="nvcc.compiler.optimization.level.most" id="nvcc.compiler.optimization.level.1469110612" name="Optimization Level" superClass="nvcc.compiler.optimization.level" valueType="enumerated"/>
+							<option id="nvcc.compiler.pic.473250581" name="Position Independent Code (-fPIC)" superClass="nvcc.compiler.pic"/>
+							<inputType id="nvcc.compiler.input.cu.2043839606" superClass="nvcc.compiler.input.cu"/>
+							<inputType id="nvcc.compiler.input.cpp.1886951935" superClass="nvcc.compiler.input.cpp"/>
+							<inputType id="nvcc.compiler.input.c.1094524084" superClass="nvcc.compiler.input.c"/>
+						</tool>
+						<tool customBuildStep="true" id="org.eclipse.cdt.managedbuilder.ui.rcbs.746588287" name="Resource Custom Build Step">
+							<inputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.inputtype.1650014138" name="Resource Custom Build Step Input Type">
+								<additionalInput kind="additionalinputdependency" paths=""/>
+							</inputType>
+							<outputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.outputtype.1855226773" name="Resource Custom Build Step Output Type"/>
+						</tool>
+					</fileInfo>
 					<fileInfo id="cdt.managedbuild.config.gnu.exe.release.909893455.342638207" name="gpuApply.cu" rcbsApplicability="disable" resourcePath="gpuApply.cu" toolsToInvoke="nvcc.compiler.base.226580005">
 						<tool id="nvcc.compiler.base.226580005" name="NVCC Compiler" superClass="nvcc.compiler.base">
 							<option id="nvcc.compiler.deviceDebug.733503384" name="Generate device debug information (-G)" superClass="nvcc.compiler.deviceDebug"/>
