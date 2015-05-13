@@ -69,6 +69,7 @@ int main(int argc, char *aargv[])
 		cam1.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
 		
 		vector<Mat> images;
+		Mat left, right;
 		try
 		{
 			bool res;
@@ -89,14 +90,16 @@ int main(int argc, char *aargv[])
 				if (cam0.isOpened()) {
 					cam0 >> image;
 					if (image.empty() == false) {
-						images.push_back(image);
+						image.copyTo(left);
+						images.push_back(left);
 						imshow("cam0", image);
 					}
 				}
 				if (cam1.isOpened()) {
 					cam1 >> image;
 					if (image.empty() == false) {
-						images.push_back(image);
+						image.copyTo(right);
+						images.push_back(right);
 						imshow("cam1", image);
 					}
 				}
