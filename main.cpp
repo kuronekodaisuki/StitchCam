@@ -22,13 +22,13 @@ static void callback(void *pItem, char *pDeviceName)
 	printf("%s\n", (char*)pDeviceName);
 }
 
-const float WIDTH = 320.0;
-const float HEIGHT = 240.0;
+const float WIDTH = 640.0;
+const float HEIGHT = 480.0;
 const float FPS = 15.0;
 
 int main(int argc, char *aargv[])
 {
-	int count = cudaDeviceCount();
+	int count = gpu::getCudaEnabledDeviceCount(); //cudaDeviceCount();
 	printf("CUDA device count:%d\n", count);
 	count = WebCam::EnumDevices((PENUMDEVICE)&callback, NULL);
 	printf("Camera device count:%d\n", count);
