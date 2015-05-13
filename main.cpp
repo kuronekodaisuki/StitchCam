@@ -6,6 +6,7 @@
  */
 
 #include <stdio.h>
+#include <sys/time.h>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/stitching/stitcher.hpp>
@@ -17,6 +18,15 @@
 
 using namespace std;
 using namespace cv;
+
+uint32_t getTick() {
+    struct timespec ts;
+    unsigned theTick = 0U;
+    clock_gettime( CLOCK_REALTIME, &ts );
+    theTick  = ts.tv_nsec / 1000000;
+    theTick += ts.tv_sec * 1000;
+    return theTick;
+}
 
 static void callback(void *pItem, char *pDeviceName)
 {
@@ -103,6 +113,7 @@ int main(int argc, char *aargv[])
 						imshow("cam1", image);
 					}
 				}
+				uint32_t start;
 				char key = (char)waitKey(10);
 				switch (key)
 				{
@@ -113,9 +124,11 @@ int main(int argc, char *aargv[])
 
 				case 'c':
 				case 'C':
+					start = getTick();
 					switch (stitcher.stitch(images, panorama))
 					{
 					case Stitcher::OK:
+						printf("%d msec\n", getTick() - start);
 						imshow("Panorama", panorama);
 						break;
 
