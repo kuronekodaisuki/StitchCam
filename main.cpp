@@ -8,7 +8,8 @@
 #include <stdio.h>
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/stitching/stitcher.hpp>
+//#include <opencv2/highgui/highgui.hpp>
 
 #include "cuda.h"
 #include "WebCam.h"
@@ -33,7 +34,7 @@ int main(int argc, char *aargv[])
 	count = WebCam::EnumDevices((PENUMDEVICE)&callback, NULL);
 	printf("Camera device count:%d\n", count);
 
-	//StitchImage stitcher = StitchImage::createDefault();
+	Stitcher stitcher = Stitcher::createDefault();
 
 	if (count == 1)
 	{
@@ -84,15 +85,7 @@ int main(int argc, char *aargv[])
 
 			for (bool loop = true; loop; )
 			{
-				char key = (char)waitKey(10);
-				switch (key)
-				{
-				case 'q':
-				case 'Q':
-					loop = false;
-					break;
-				}
-				Mat image;
+				Mat image, panorama;
 				if (cam0.isOpened()) {
 					cam0 >> image;
 					if (image.empty() == false) {
@@ -107,6 +100,35 @@ int main(int argc, char *aargv[])
 						imshow("cam1", image);
 					}
 				}
+				char key = (char)waitKey(10);
+				switch (key)
+				{
+				case 'q':
+				case 'Q':
+					loop = false;
+					break;
+
+				case 'c':
+				case 'C':
+					switch (stitcher.stitch(images, panorama))
+					{
+					case Stitcher::OK:
+						imshow("Panorama", panorama);
+						break;
+
+					case Stitcher::ERR_NEED_MORE_IMGS:
+						printf("Need more IMAGES\n");
+						break;
+
+					case Stitcher::ORIG_RESOL:
+						printf("Resolution\n");
+						break;
+
+					default:
+						printf("Failed to stitch\n");
+					}
+				}
+
 				images.clear();
 			}
 			cam0.release();
