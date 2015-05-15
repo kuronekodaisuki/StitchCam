@@ -35,7 +35,7 @@ static void callback(void *pItem, char *pDeviceName)
 
 const float WIDTH = 640.0;
 const float HEIGHT = 480.0;
-const float FPS = 30.0;
+const float FPS = 15.0;
 
 int main(int argc, char *aargv[])
 {
@@ -70,7 +70,7 @@ int main(int argc, char *aargv[])
 	{
 		try
 		{
-			bool res;
+			bool res, continuous = false;
 			VideoCapture cam0, cam1;	
 			vector<Mat> images;
 			Mat left, right;
@@ -113,6 +113,11 @@ int main(int argc, char *aargv[])
 					loop = false;
 					break;
 
+				case 's':
+				case 'S':
+					continuous = !continuous;
+					break;
+
 				case 'c':
 				case 'C':
 					start = getTick();
@@ -136,6 +141,13 @@ int main(int argc, char *aargv[])
 					}
 				}
 
+				if (continuous) {
+					start = getTick();
+					if (Stitcher::OK == stitcher.composePanorama(images, panorama)) {
+						printf("%d msec\n", getTick() - start);
+						imshow("Panorama", panorama);
+					}
+				}
 				images.clear();
 			}
 			cam0.release();
