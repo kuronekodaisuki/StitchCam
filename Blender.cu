@@ -3,11 +3,10 @@
 
 #include "MyBlender.h"
 
-//#include <stdio.h>
-
 using namespace std;
 
-__global__ void kernelFeed(int rows, int cols, uchar *dst, const uchar *src, const uchar *mask, int dStep, int sStep, int mStep)
+template<typename T>
+__global__ void kernelFeed(int rows, int cols, T *dst, const T *src, const uchar *mask, int dStep, int sStep, int mStep)
 {
 	int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -29,9 +28,21 @@ namespace detail {
 	{
 		dim3 threads(16, 16);	// 256 threads yealds better performance
 		dim3 blocks(image.cols / threads.x, image.rows / threads.y);
-		kernelFeed<<<blocks, threads>>>(image.rows, image.cols, 
-			dst.ptr<uchar>(dy) + dx * 3, image.ptr<uchar>(), mask.ptr<uchar>(),
-			dst.step, image.step, mask.step);
+		switch (image.type())
+		{
+		case CV_8UC3:
+			kernelFeed<<<blocks, threads>>>(image.rows, image.cols, 
+				dst.ptr<uchar>(dy) + dx * 3, image.ptr<uchar>(), mask.ptr<uchar>(),
+				dst.step, image.step, mask.step);
+			cudaDeviceSynchronize();
+			break;
+		case CV_16SC3:
+			kernelFeed<<<blocks, threads>>>(image.rows, image.cols, 
+				dst.ptr<short>(dy) + dx * 3, image.ptr<short>(), mask.ptr<uchar>(),
+				dst.step, image.step, mask.step);
+			cudaDeviceSynchronize();
+			break;
+		}
 	}
 
 	void cudaFeed(const Mat &image, const Mat &mask, gpu::GpuMat &dst, int dx, int dy)
