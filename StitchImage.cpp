@@ -452,9 +452,19 @@ StitchImage::Status StitchImage::composePanorama(OutputArray pano)
 
         Mat K;
         cameras_[img_idx].K().convertTo(K, CV_32F);
-
+#ifdef DRAW_LINES
+		for (int y = 40; y < img.rows; y += 80) {
+			line(img, Point(0, y), Point(img.cols - 1, y), Scalar(255,255,255));
+		}
+		for (int x = 40; x < img.cols; x += 80) {
+			line(img, Point(x, 0), Point(x, img.rows - 1), Scalar(255,255,255));
+		}
+#endif
         // Warp the current image
         w->warp(img, K, cameras_[img_idx].R, INTER_LINEAR, BORDER_REFLECT, img_warped);
+		char name[60];
+		sprintf(name, "Warped:%d", img_idx);
+		imshow(name, img_warped);
 
         // Warp the current image mask
         mask.create(img_size, CV_8U);
