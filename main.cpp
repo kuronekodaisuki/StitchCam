@@ -68,21 +68,12 @@ int main(int argc, char *aargv[])
 	}
 	else if (2 <= count)
 	{
-		VideoCapture cam0, cam1;
-		cam0.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
-		cam0.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
-		cam0.set(CV_CAP_PROP_FPS, FPS);
-		cam0.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
-		cam1.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
-		cam1.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
-		cam1.set(CV_CAP_PROP_FPS, FPS);
-		cam1.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
-		
-		vector<Mat> images;
-		Mat left, right;
 		try
 		{
 			bool res;
+			VideoCapture cam0, cam1;	
+			vector<Mat> images;
+			Mat left, right;
 			res = cam0.open(CV_CAP_V4L2 + 0);
 			res = cam0.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
 			res = cam0.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
