@@ -199,8 +199,8 @@ BOOL COpenCVStitchDlg::OnInitDialog()
 	if ((count = gpu::getCudaEnabledDeviceCount()) > 0)
 	{
 		stitcher = MyStitcher::createDefault(true);	// CUDA‚ªg—p‚Å‚«‚éê‡
-		//stitcher.setBlender(new detail::MyBlender(true));
-		//stitcher.setExposureCompensator(new detail::MyCompensator(true));
+		stitcher.setBlender(new detail::MyBlender());
+		stitcher.setExposureCompensator(new detail::MyCompensator(true));
 		//stitcher.setWarper(new MyCylindricalWarperGpu());
 		CString buffer;
 		buffer.Format("%d CUDA device detected.", count);

@@ -1,4 +1,4 @@
-#include <device_launch_parameters.h>
+//#include <device_launch_parameters.h>
 #include <opencv2/gpu/device/saturate_cast.hpp>
 
 #include "MyBlender.h"
@@ -6,15 +6,15 @@
 using namespace std;
 
 template<typename T>
-__global__ void kernelFeed(int rows, int cols, T *dst, const T *src, const uchar *mask, int dStep, int sStep, int mStep)
+__global__ void kernelFeed(int height, int width, T *dst, const T *src, const uchar *mask, int dStep, int sStep, int mStep)
 {
 	int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
-	int offset = x + y * mStep;
-	if (x < cols && y < rows && mask[offset])
+	//int offset = x + y * mStep; // offset for mask
+	if (x < width && y < height && mask[x + y * mStep])
 	{
-		int dOffset = x * 3 + y * dStep;
-		offset = x * 3 + y * sStep;
+		int dOffset = x * 3 + y * dStep; // offset for dst
+		int offset = x * 3 + y * sStep; // offset for src
 		dst[dOffset] = src[offset];
 		dst[dOffset + 1] = src[offset + 1];
 		dst[dOffset + 2] = src[offset + 2];
@@ -28,6 +28,7 @@ namespace detail {
 	{
 		dim3 threads(16, 16);	// 256 threads yealds better performance
 		dim3 blocks(image.cols / threads.x, image.rows / threads.y);
+
 		switch (image.type())
 		{
 		case CV_8UC3:
