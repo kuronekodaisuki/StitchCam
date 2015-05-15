@@ -7,6 +7,12 @@
 #include "OpenCVStitchDlg.h"
 #include "afxdialogex.h"
 
+#include "MyCompensator.h"
+#include "../MyBlender.h"
+#include "../MySeamFinder.h"
+#include "../MyWarper.h"
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -192,14 +198,20 @@ BOOL COpenCVStitchDlg::OnInitDialog()
 	int count = 0;
 	if ((count = gpu::getCudaEnabledDeviceCount()) > 0)
 	{
-		stitcher = StitchImage::createDefault(true);	// CUDAが使用できる場合
+		stitcher = MyStitcher::createDefault(true);	// CUDAが使用できる場合
+		//stitcher.setBlender(new detail::MyBlender(true));
+		//stitcher.setExposureCompensator(new detail::MyCompensator(true));
+		//stitcher.setWarper(new MyCylindricalWarperGpu());
 		CString buffer;
 		buffer.Format("%d CUDA device detected.", count);
 		m_status.SetWindowText(buffer);
 	}
 	else
 	{
-		stitcher = StitchImage::createDefault(false);	// CUDAが使用できない場合
+		stitcher = MyStitcher::createDefault();	// CUDAが使用できない場合
+		stitcher.setBlender(new detail::MyBlender());
+		stitcher.setExposureCompensator(new detail::MyCompensator());
+		//stitcher.setWarper(new MyCylindricalWarperGpu());
 		m_status.SetWindowText("No CUDA device detected.");
 	}
 	pDlg = this;
@@ -347,7 +359,7 @@ void COpenCVStitchDlg::DoStitch()
 	if (2 <= camera.size())
 	{
 		int64 t = getTickCount();
-		if (StitchImage::Status::OK == stitcher.composePanorama(images, stitched)) {
+		if (MyStitcher::Status::OK == stitcher.composePanorama(images, stitched)) {
 			UpdateValue((getTickCount() - t) / getTickFrequency() * 1000);
 			imshow(STITCHED, stitched);
 			if (writer.isOpened())
@@ -407,7 +419,7 @@ void COpenCVStitchDlg::OnBnClickedCaribrate()
 	{
 		int64 t = getTickCount();
 		stitcher.estimateTransform(images);
-		if (StitchImage::Status::OK == stitcher.composePanorama(images, stitched)) {
+		if (MyStitcher::Status::OK == stitcher.composePanorama(stitched)) {
 			CString buffer;
 			buffer.Format("%.2fmsec", (getTickCount() - t) / getTickFrequency() * 1000);
 			m_status.SetWindowText(buffer);

@@ -10,7 +10,8 @@
 #include <cuda_runtime_api.h>
 
 #include "..\WebCam.h"
-#include "StitchImage.h"
+//#include "StitchImage.h"
+#include "MyStitcher.h"
 
 using namespace cv;
 
@@ -34,7 +35,9 @@ public:
 protected:
 	HICON m_hIcon;
 
-	StitchImage stitcher;	// Customised cv::Stitcher
+	//StitchImage stitcher;	// Customised cv::Stitcher
+	MyStitcher stitcher;
+
 	vector<WebCam> camera;
 	VideoWriter writer;
 	Size imageSize;
