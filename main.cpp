@@ -35,7 +35,7 @@ static void callback(void *pItem, char *pDeviceName)
 
 const float WIDTH = 640.0;
 const float HEIGHT = 480.0;
-const float FPS = 15.0;
+const float FPS = 30.0;
 
 int main(int argc, char *aargv[])
 {
