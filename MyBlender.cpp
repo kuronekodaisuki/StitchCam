@@ -61,7 +61,7 @@ void MyBlender::feed(const Mat &img, const Mat &mask, Point tl)
 	{
 		cudaFeed(img, mask, gpuDst_, dx, dy);
 	}
-	else
+	else if (img.type() == CV_8UC3)
 	{
 #ifdef	_OPENMP
 #		pragma omp parallel for
@@ -71,6 +71,26 @@ void MyBlender::feed(const Mat &img, const Mat &mask, Point tl)
 			const Point3_<uchar> *src_row = img.ptr<Point3_<uchar> >(y);
 			const uchar *mask_row = mask.ptr<uchar>(y);
 			Point3_<uchar> *dst_row = dst_.ptr<Point3_<uchar> >(dy + y);
+			uchar *dst_mask_row = dst_mask_.ptr<uchar>(dy + y);
+
+			for (int x = 0; x < img.cols; ++x)
+			{
+				if (mask_row[x])
+					dst_row[dx + x] = src_row[x];
+				dst_mask_row[dx + x] |= mask_row[x];
+			}
+		}
+	}
+	else // CV_16SC3
+	{
+#ifdef	_OPENMP
+#		pragma omp parallel for
+#endif
+		for (int y = 0; y < img.rows; ++y)
+		{
+			const Point3_<short> *src_row = img.ptr<Point3_<short> >(y);
+			const uchar *mask_row = mask.ptr<uchar>(y);
+			Point3_<short> *dst_row = dst_.ptr<Point3_<short> >(dy + y);
 			uchar *dst_mask_row = dst_mask_.ptr<uchar>(dy + y);
 
 			for (int x = 0; x < img.cols; ++x)
