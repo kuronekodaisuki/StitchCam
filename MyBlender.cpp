@@ -26,12 +26,14 @@ MyBlender::MyBlender(int try_gpu)
 
 void MyBlender::prepare(Rect dst_roi)
 {
+	/*
 	dst_.create(dst_roi.size(), CV_8UC3);
     dst_.setTo(Scalar::all(0));
 	if (use_gpu)
 	{
 		gpuDst_.upload(dst_);
 	}
+	*/
     dst_mask_.create(dst_roi.size(), CV_8U);
     dst_mask_.setTo(Scalar::all(0));
     dst_roi_ = dst_roi;
@@ -39,9 +41,20 @@ void MyBlender::prepare(Rect dst_roi)
 
 void MyBlender::feed(const Mat &img, const Mat &mask, Point tl)
 {
-	CV_Assert(img.type() == CV_8UC3);
+	CV_Assert(img.type() == CV_8UC3 || img.type() == CV_16SC3); // —¼•ûó‚¯•t‚¯‚é
     CV_Assert(mask.type() == CV_8U);
-    int dx = tl.x - dst_roi_.x;
+ 
+	// ‚±‚±‚Å“ü—Í‚É‰‚¶‚Ädst_‚ğì¬‚·‚é
+	if (dst_.empty()) {
+		dst_.create(dst_roi_.size(), img.type());
+		dst_.setTo(Scalar::all(0));
+		if (use_gpu)
+		{
+			gpuDst_.upload(dst_);
+		}	
+	}
+
+	int dx = tl.x - dst_roi_.x;
     int dy = tl.y - dst_roi_.y;
 
 	if (use_gpu)
