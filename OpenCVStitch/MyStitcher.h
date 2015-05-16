@@ -134,7 +134,10 @@ public:
     std::vector<detail::CameraParams> cameras() const { return cameras_; }
     double workScale() const { return work_scale_; }
 
-	void restore() {
+	// ‰ü‘¢•”•ª
+	bool use_gpu;
+    Status composePanoramaGpu(InputArray images, OutputArray pano); // tuned for GPU 
+    void restore() {
 		cameras_ = cameras_save;
 		warped_image_scale_ = warped_image_scale_save;
 	}

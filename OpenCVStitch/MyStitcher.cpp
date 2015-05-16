@@ -42,7 +42,7 @@
 
 #include "MyStitcher.h"
 
-#define WORK_RESOLUTION 0.08 // 0riginal 0.8
+#define WORK_RESOLUTION 0.08 // 0riginal 0.6
 #define SEAM_RESOLUTION 0.08 // Original 0.1
 #define PANO_THRESHOLD 0.5 // original 1
 
@@ -88,6 +88,8 @@ MyStitcher MyStitcher::createDefault(bool try_use_gpu)
     stitcher.setExposureCompensator(new detail::BlocksGainCompensator());
     stitcher.setBlender(new detail::MultiBandBlender(try_use_gpu));
 
+	stitcher.use_gpu = try_use_gpu;
+
     return stitcher;
 }
 
@@ -110,6 +112,9 @@ MyStitcher::Status MyStitcher::estimateTransform(InputArray images, const vector
 
     estimateCameraParams();
 
+	cameras_save = cameras_;
+	warped_image_scale_save = warped_image_scale_;
+
     return OK;
 }
 
@@ -123,6 +128,10 @@ MyStitcher::Status MyStitcher::composePanorama(OutputArray pano)
 
 MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pano)
 {
+	if (use_gpu) {
+		return composePanoramaGpu(images, pano);
+	}
+
     LOGLN("Warping images (auxiliary)... ");
 
     vector<Mat> imgs;
@@ -130,6 +139,7 @@ MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pa
     if (!imgs.empty())
     {
         CV_Assert(imgs.size() == imgs_.size());
+		restore();
 
         Mat img;
         seam_est_imgs_.resize(imgs.size());
@@ -320,6 +330,205 @@ MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pa
     return OK;
 }
 
+MyStitcher::Status MyStitcher::composePanoramaGpu(InputArray images, OutputArray pano)
+{
+    LOGLN("Warping images (auxiliary)... ");
+
+    vector<Mat> imgs;
+    images.getMatVector(imgs);
+    if (!imgs.empty())
+    {
+        CV_Assert(imgs.size() == imgs_.size());
+		restore();
+
+        Mat img;
+        seam_est_imgs_.resize(imgs.size());
+
+        for (size_t i = 0; i < imgs.size(); ++i)
+        {
+            imgs_[i] = imgs[i];
+            resize(imgs[i], img, Size(), seam_scale_, seam_scale_);
+            seam_est_imgs_[i] = img.clone();
+        }
+
+        vector<Mat> seam_est_imgs_subset;
+        vector<Mat> imgs_subset;
+
+        for (size_t i = 0; i < indices_.size(); ++i)
+        {
+            imgs_subset.push_back(imgs_[indices_[i]]);
+            seam_est_imgs_subset.push_back(seam_est_imgs_[indices_[i]]);
+        }
+
+        seam_est_imgs_ = seam_est_imgs_subset;
+        imgs_ = imgs_subset;
+    }
+
+    Mat &pano_ = pano.getMatRef();
+
+#if ENABLE_LOG
+    int64 t = getTickCount();
+#endif
+
+    vector<Point> corners(imgs_.size());
+    vector<Mat> masks_warped(imgs_.size());
+    vector<Mat> images_warped(imgs_.size());
+    vector<Size> sizes(imgs_.size());
+    vector<Mat> masks(imgs_.size());
+
+    // Prepare image masks
+    for (size_t i = 0; i < imgs_.size(); ++i)
+    {
+        masks[i].create(seam_est_imgs_[i].size(), CV_8U);
+        masks[i].setTo(Scalar::all(255));
+    }
+
+    // Warp images and their masks
+    Ptr<detail::RotationWarper> w = warper_->create(float(warped_image_scale_ * seam_work_aspect_));
+    for (size_t i = 0; i < imgs_.size(); ++i)
+    {
+        Mat_<float> K;
+        cameras_[i].K().convertTo(K, CV_32F);
+        K(0,0) *= (float)seam_work_aspect_;
+        K(0,2) *= (float)seam_work_aspect_;
+        K(1,1) *= (float)seam_work_aspect_;
+        K(1,2) *= (float)seam_work_aspect_;
+
+        corners[i] = w->warp(seam_est_imgs_[i], K, cameras_[i].R, INTER_LINEAR, BORDER_REFLECT, images_warped[i]);
+        sizes[i] = images_warped[i].size();
+
+        w->warp(masks[i], K, cameras_[i].R, INTER_NEAREST, BORDER_CONSTANT, masks_warped[i]);
+    }
+
+    vector<Mat> images_warped_f(imgs_.size());
+    for (size_t i = 0; i < imgs_.size(); ++i)
+        images_warped[i].convertTo(images_warped_f[i], CV_32F);
+
+    LOGLN("Warping images, time: " << ((getTickCount() - t) / getTickFrequency()) << " sec");
+
+    // Find seams
+    exposure_comp_->feed(corners, images_warped, masks_warped);
+    seam_finder_->find(images_warped_f, corners, masks_warped);
+
+    // Release unused memory
+    seam_est_imgs_.clear();
+    images_warped.clear();
+    images_warped_f.clear();
+    masks.clear();
+
+    LOGLN("Compositing...");
+#if ENABLE_LOG
+    t = getTickCount();
+#endif
+
+    Mat img_warped, img_warped_s;
+    Mat dilated_mask, seam_mask, mask, mask_warped;
+
+    //double compose_seam_aspect = 1;
+    double compose_work_aspect = 1;
+    bool is_blender_prepared = false;
+
+    double compose_scale = 1;
+    bool is_compose_scale_set = false;
+
+    Mat full_img, img;
+    for (size_t img_idx = 0; img_idx < imgs_.size(); ++img_idx)
+    {
+        LOGLN("Compositing image #" << indices_[img_idx] + 1);
+
+        // Read image and resize it if necessary
+        full_img = imgs_[img_idx];
+        if (!is_compose_scale_set)
+        {
+            if (compose_resol_ > 0)
+                compose_scale = min(1.0, sqrt(compose_resol_ * 1e6 / full_img.size().area()));
+            is_compose_scale_set = true;
+
+            // Compute relative scales
+            //compose_seam_aspect = compose_scale / seam_scale_;
+            compose_work_aspect = compose_scale / work_scale_;
+
+            // Update warped image scale
+            warped_image_scale_ *= static_cast<float>(compose_work_aspect);
+            w = warper_->create((float)warped_image_scale_);
+
+            // Update corners and sizes
+            for (size_t i = 0; i < imgs_.size(); ++i)
+            {
+                // Update intrinsics
+                cameras_[i].focal *= compose_work_aspect;
+                cameras_[i].ppx *= compose_work_aspect;
+                cameras_[i].ppy *= compose_work_aspect;
+
+                // Update corner and size
+                Size sz = full_img_sizes_[i];
+                if (std::abs(compose_scale - 1) > 1e-1)
+                {
+                    sz.width = cvRound(full_img_sizes_[i].width * compose_scale);
+                    sz.height = cvRound(full_img_sizes_[i].height * compose_scale);
+                }
+
+                Mat K;
+                cameras_[i].K().convertTo(K, CV_32F);
+                Rect roi = w->warpRoi(sz, K, cameras_[i].R);
+                corners[i] = roi.tl();
+                sizes[i] = roi.size();
+            }
+        }
+        if (std::abs(compose_scale - 1) > 1e-1)
+            resize(full_img, img, Size(), compose_scale, compose_scale);
+        else
+            img = full_img;
+        full_img.release();
+        Size img_size = img.size();
+
+        Mat K;
+        cameras_[img_idx].K().convertTo(K, CV_32F);
+
+        // Warp the current image
+        w->warp(img, K, cameras_[img_idx].R, INTER_LINEAR, BORDER_REFLECT, img_warped);
+
+        // Warp the current image mask
+        mask.create(img_size, CV_8U);
+        mask.setTo(Scalar::all(255));
+        w->warp(mask, K, cameras_[img_idx].R, INTER_NEAREST, BORDER_CONSTANT, mask_warped);
+
+        // Compensate exposure
+        exposure_comp_->apply((int)img_idx, corners[img_idx], img_warped, mask_warped);
+
+        //img_warped.convertTo(img_warped_s, CV_16S);
+        //img_warped.release();
+        img.release();
+        mask.release();
+
+        // Make sure seam mask has proper size
+        dilate(masks_warped[img_idx], dilated_mask, Mat());
+        resize(dilated_mask, seam_mask, mask_warped.size());
+
+        mask_warped = seam_mask & mask_warped;
+
+        if (!is_blender_prepared)
+        {
+            blender_->prepare(corners, sizes);
+            is_blender_prepared = true;
+        }
+
+        // Blend the current image
+        blender_->feed(img_warped, mask_warped, corners[img_idx]);
+		img_warped.release();
+    }
+
+    Mat result, result_mask;
+    blender_->blend(result, result_mask);
+
+    LOGLN("Compositing, time: " << ((getTickCount() - t) / getTickFrequency()) << " sec");
+
+    // Preliminary result is in CV_16SC3 format, but all values are in [0,255] range,
+    // so convert it to avoid user confusing
+    //result.convertTo(pano_, CV_8U);
+	result.copyTo(pano_);
+    return OK;
+}
 
 MyStitcher::Status MyStitcher::stitch(InputArray images, OutputArray pano)
 {
