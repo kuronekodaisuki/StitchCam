@@ -490,22 +490,31 @@ void COpenCVStitchDlg::OnBnClickedCam4()
 void COpenCVStitchDlg::OnBnClickedRadio1()
 {
 	stitcher.setSeamFinder(new detail::NoSeamFinder());
+	m_status.SetWindowText("NoSeamFinder");
 }
 
 
 void COpenCVStitchDlg::OnBnClickedRadio2()
 {
 	stitcher.setSeamFinder(new detail::DpSeamFinder());
+	m_status.SetWindowText("DpSeamFinder");
 }
 
 
 void COpenCVStitchDlg::OnBnClickedRadio3()
 {
 	stitcher.setSeamFinder(new detail::VoronoiSeamFinder());
+	m_status.SetWindowText("VoronoiSeamFinder");
 }
 
 
 void COpenCVStitchDlg::OnBnClickedRadio4()
 {
-	stitcher.setSeamFinder(new detail::GraphCutSeamFinder());
+	if (gpu::getCudaEnabledDeviceCount() > 0) {
+		stitcher.setSeamFinder(new detail::GraphCutSeamFinderGpu());
+		m_status.SetWindowText("GraphCutSeamFinderGpu");
+	} else {
+		stitcher.setSeamFinder(new detail::GraphCutSeamFinder());
+		m_status.SetWindowText("GraphCutSeamFinder");
+	}
 }
