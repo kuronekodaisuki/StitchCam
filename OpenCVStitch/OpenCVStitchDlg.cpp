@@ -163,7 +163,7 @@ BOOL COpenCVStitchDlg::OnInitDialog()
 		stitcher = MyStitcher::createDefault(true);	// CUDA‚ªg—p‚Å‚«‚éê‡
 		stitcher.setBlender(new detail::MyBlender());
 		stitcher.setExposureCompensator(new detail::MyCompensator(true));
-		//stitcher.setWarper(new MyCylindricalWarperGpu());
+		stitcher.setSeamFinder(new detail::MySeamFinder(detail::MySeamFinder::COLOR_GRAD));
 		CString buffer;
 		buffer.Format("%d CUDA device detected.", count);
 		m_status.SetWindowText(buffer);

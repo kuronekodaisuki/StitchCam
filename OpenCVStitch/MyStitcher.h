@@ -49,14 +49,6 @@
 #include "../MyBlender.h"
 #include "../MyCompensator.h"
 
-//#include <opencv2/features2d/features2d.hpp>
-//#include <opencv2/stitching/warpers.hpp>
-//#include <opencv2/stitching/detail/matchers.hpp>
-//#include <opencv2/stitching/detail/motion_estimators.hpp>
-//#include <opencv2/stitching/detail/exposure_compensate.hpp>
-//#include <opencv2/stitching/detail/seam_finders.hpp>
-//#include <opencv2/stitching/detail/blenders.hpp>
-//#include <opencv2/stitching/detail/camera.hpp>
 
 namespace cv {
 
@@ -148,7 +140,7 @@ protected:
 
 	//Ptr<detail::SphericalWarperGpu> warper_gpu;
 	Ptr<detail::MyBlender> blender_gpu;
-	Ptr<detail::MyCompensator> compensator_gpu;
+	Ptr<detail::MyCompensator> exposure_comp_gpu;
 
     void restore() {
 		cameras_ = cameras_save;

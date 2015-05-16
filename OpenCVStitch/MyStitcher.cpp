@@ -73,7 +73,7 @@ MyStitcher MyStitcher::createDefault(bool try_use_gpu)
 #endif
         stitcher.setWarper(new SphericalWarperGpu());
         stitcher.setSeamFinder(new detail::GraphCutSeamFinderGpu());
-		stitcher.compensator_gpu = new detail::MyCompensator(true);
+		stitcher.exposure_comp_gpu = new detail::MyCompensator(true);
 		stitcher.blender_gpu = new detail::MyBlender(true);
     }
     else
@@ -413,7 +413,7 @@ MyStitcher::Status MyStitcher::composePanoramaGpu(InputArray images, OutputArray
     LOGLN("Warping images, time: " << ((getTickCount() - t) / getTickFrequency()) << " sec");
 
     // Find seams
-    exposure_comp_->feed(corners, images_warped, masks_warped);
+    exposure_comp_gpu->feed(corners, images_warped, masks_warped);
     seam_finder_->find(images_warped_f, corners, masks_warped);
 
     // Release unused memory
@@ -429,6 +429,7 @@ MyStitcher::Status MyStitcher::composePanoramaGpu(InputArray images, OutputArray
 
     Mat img_warped, img_warped_s;
     Mat dilated_mask, seam_mask, mask, mask_warped;
+	gpu::GpuMat	img_gpu, mask_gpu, img_warped_gpu, mask_warped_gpu;
 
     //double compose_seam_aspect = 1;
     double compose_work_aspect = 1;
@@ -492,15 +493,16 @@ MyStitcher::Status MyStitcher::composePanoramaGpu(InputArray images, OutputArray
         cameras_[img_idx].K().convertTo(K, CV_32F);
 
         // Warp the current image
-        w->warp(img, K, cameras_[img_idx].R, INTER_LINEAR, BORDER_REFLECT, img_warped);
+		img_gpu.upload(img);
+		w->warp(img_gpu, K, cameras_[img_idx].R, INTER_LINEAR, BORDER_REFLECT, img_warped_gpu);
 
         // Warp the current image mask
-        mask.create(img_size, CV_8U);
-        mask.setTo(Scalar::all(255));
-        w->warp(mask, K, cameras_[img_idx].R, INTER_NEAREST, BORDER_CONSTANT, mask_warped);
+        mask_gpu.create(img_size, CV_8U);
+        mask_gpu.setTo(Scalar::all(255));
+        w->warp(mask_gpu, K, cameras_[img_idx].R, INTER_NEAREST, BORDER_CONSTANT, mask_warped_gpu);
 
         // Compensate exposure
-        exposure_comp_->apply((int)img_idx, corners[img_idx], img_warped, mask_warped);
+        exposure_comp_gpu->apply((int)img_idx, corners[img_idx], img_warped_gpu, mask_warped_gpu); // 4th param is dummy, not affected
 
         //img_warped.convertTo(img_warped_s, CV_16S);
         //img_warped.release();
@@ -508,24 +510,24 @@ MyStitcher::Status MyStitcher::composePanoramaGpu(InputArray images, OutputArray
         mask.release();
 
         // Make sure seam mask has proper size
-        dilate(masks_warped[img_idx], dilated_mask, Mat());
-        resize(dilated_mask, seam_mask, mask_warped.size());
+        //dilate(masks_warped[img_idx], dilated_mask, Mat());
+        //resize(dilated_mask, seam_mask, mask_warped.size());
 
-        mask_warped = seam_mask & mask_warped;
+        //mask_warped = seam_mask & mask_warped;
 
         if (!is_blender_prepared)
         {
-            blender_->prepare(corners, sizes);
+            blender_gpu->prepare(corners, sizes);
             is_blender_prepared = true;
         }
 
         // Blend the current image
-        blender_->feed(img_warped, mask_warped, corners[img_idx]);
-		img_warped.release();
+        blender_gpu->feed(img_warped_gpu, mask_warped_gpu, corners[img_idx]);
+		img_warped_gpu.release();
     }
 
     Mat result, result_mask;
-    blender_->blend(result, result_mask);
+    blender_gpu->blend(result, result_mask);
 
     LOGLN("Compositing, time: " << ((getTickCount() - t) / getTickFrequency()) << " sec");
 
