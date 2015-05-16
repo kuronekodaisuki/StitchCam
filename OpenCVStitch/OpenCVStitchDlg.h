@@ -77,4 +77,9 @@ public:
 	afx_msg void OnBnClickedCam4();
 	CButton m_start;
 	CStatic m_status;
+	afx_msg void OnBnClickedRadio1();
+	afx_msg void OnBnClickedRadio2();
+	afx_msg void OnBnClickedRadio3();
+	afx_msg void OnBnClickedRadio4();
+	CButton m_NoSeamFinder;
 };

@@ -79,9 +79,10 @@ void COpenCVStitchDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CAM3, m_cam3);
 	DDX_Control(pDX, IDC_CAM4, m_cam4);
 	DDX_Control(pDX, IDC_WIDE, m_qvga);
-	DDX_Control(pDX, IDC_SAVE, m_save);
+//	DDX_Control(pDX, IDC_SAVE, m_save);
 	DDX_Control(pDX, IDC_START, m_start);
 	DDX_Control(pDX, IDC_STATUS, m_status);
+	DDX_Control(pDX, IDCANCEL, m_NoSeamFinder);
 }
 
 BEGIN_MESSAGE_MAP(COpenCVStitchDlg, CDialogEx)
@@ -93,11 +94,15 @@ BEGIN_MESSAGE_MAP(COpenCVStitchDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CARIBRATE, &COpenCVStitchDlg::OnBnClickedCaribrate)
 	ON_BN_CLICKED(IDC_STOP, &COpenCVStitchDlg::OnBnClickedStop)
 	ON_BN_CLICKED(IDC_START, &COpenCVStitchDlg::OnBnClickedStart)
-	ON_BN_CLICKED(IDC_FILE, &COpenCVStitchDlg::OnBnClickedFile)
+//	ON_BN_CLICKED(IDC_FILE, &COpenCVStitchDlg::OnBnClickedFile)
 	ON_BN_CLICKED(IDC_CAM1, &COpenCVStitchDlg::OnBnClickedCam1)
 	ON_BN_CLICKED(IDC_CAM2, &COpenCVStitchDlg::OnBnClickedCam2)
 	ON_BN_CLICKED(IDC_CAM3, &COpenCVStitchDlg::OnBnClickedCam3)
 	ON_BN_CLICKED(IDC_CAM4, &COpenCVStitchDlg::OnBnClickedCam4)
+	ON_BN_CLICKED(IDC_NO_SEAMFINDER, &COpenCVStitchDlg::OnBnClickedRadio1)
+	ON_BN_CLICKED(IDC_DP_SEAMFINDER, &COpenCVStitchDlg::OnBnClickedRadio2)
+	ON_BN_CLICKED(IDC_VORONOI_SEAMFINDER, &COpenCVStitchDlg::OnBnClickedRadio3)
+	ON_BN_CLICKED(IDC_GRAPHCUT_SEAMFINDER, &COpenCVStitchDlg::OnBnClickedRadio4)
 END_MESSAGE_MAP()
 
 CWnd *pDlg;
@@ -165,6 +170,8 @@ BOOL COpenCVStitchDlg::OnInitDialog()
 		stitcher.setExposureCompensator(new detail::MyCompensator(true));
 		//stitcher.setSeamFinder(new detail::MySeamFinder(detail::MySeamFinder::COLOR));
 		stitcher.setSeamFinder(new detail::DpSeamFinder());
+		
+		//stitcher.setSeamFinder(new detail::NoSeamFinder());
 		CString buffer;
 		buffer.Format("%d CUDA device detected.", count);
 		m_status.SetWindowText(buffer);
@@ -477,4 +484,28 @@ void COpenCVStitchDlg::OnBnClickedCam3()
 void COpenCVStitchDlg::OnBnClickedCam4()
 {
 	m_start.EnableWindow(FALSE);
+}
+
+
+void COpenCVStitchDlg::OnBnClickedRadio1()
+{
+	stitcher.setSeamFinder(new detail::NoSeamFinder());
+}
+
+
+void COpenCVStitchDlg::OnBnClickedRadio2()
+{
+	stitcher.setSeamFinder(new detail::DpSeamFinder());
+}
+
+
+void COpenCVStitchDlg::OnBnClickedRadio3()
+{
+	stitcher.setSeamFinder(new detail::VoronoiSeamFinder());
+}
+
+
+void COpenCVStitchDlg::OnBnClickedRadio4()
+{
+	stitcher.setSeamFinder(new detail::GraphCutSeamFinder());
 }
