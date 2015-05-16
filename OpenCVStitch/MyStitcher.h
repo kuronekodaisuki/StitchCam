@@ -140,13 +140,20 @@ public:
     double workScale() const { return work_scale_; }
 
 	// ‰ü‘¢•”•ª
+	MyStitcher() {}
+
+protected:
 	bool use_gpu;
     Status composePanoramaGpu(InputArray images, OutputArray pano); // tuned for GPU 
+
+	//Ptr<detail::SphericalWarperGpu> warper_gpu;
+	Ptr<detail::MyBlender> blender_gpu;
+	Ptr<detail::MyCompensator> compensator_gpu;
+
     void restore() {
 		cameras_ = cameras_save;
 		warped_image_scale_ = warped_image_scale_save;
 	}
-    MyStitcher() {}
 
 private:
     Status matchImages();

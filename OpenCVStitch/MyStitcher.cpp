@@ -39,6 +39,7 @@
 // the use of this software, even if advised of the possibility of such damage.
 //
 //M*/
+#include "stdafx.h"
 
 #include "MyStitcher.h"
 
@@ -72,6 +73,8 @@ MyStitcher MyStitcher::createDefault(bool try_use_gpu)
 #endif
         stitcher.setWarper(new SphericalWarperGpu());
         stitcher.setSeamFinder(new detail::GraphCutSeamFinderGpu());
+		stitcher.compensator_gpu = new detail::MyCompensator(true);
+		stitcher.blender_gpu = new detail::MyBlender(true);
     }
     else
 #endif
@@ -334,6 +337,8 @@ MyStitcher::Status MyStitcher::composePanoramaGpu(InputArray images, OutputArray
 {
     LOGLN("Warping images (auxiliary)... ");
 
+	int64 t = getTickCount();
+
     vector<Mat> imgs;
     images.getMatVector(imgs);
     if (!imgs.empty())
@@ -384,7 +389,8 @@ MyStitcher::Status MyStitcher::composePanoramaGpu(InputArray images, OutputArray
     }
 
     // Warp images and their masks
-    Ptr<detail::RotationWarper> w = warper_->create(float(warped_image_scale_ * seam_work_aspect_));
+    //Ptr<detail::RotationWarper> w = warper_->create(float(warped_image_scale_ * seam_work_aspect_));
+	Ptr<detail::SphericalWarperGpu> w = new detail::SphericalWarperGpu(float(warped_image_scale_ * seam_work_aspect_));
     for (size_t i = 0; i < imgs_.size(); ++i)
     {
         Mat_<float> K;
@@ -527,6 +533,8 @@ MyStitcher::Status MyStitcher::composePanoramaGpu(InputArray images, OutputArray
     // so convert it to avoid user confusing
     //result.convertTo(pano_, CV_8U);
 	result.copyTo(pano_);
+
+	TRACE("%.2fmsec\n", (getTickCount() - t) / getTickFrequency() * 1000);
     return OK;
 }
 
