@@ -44,14 +44,19 @@
 #define __MY_STITCHER_HPP__
 
 #include <opencv2/core/core.hpp>
-#include <opencv2/features2d/features2d.hpp>
-#include <opencv2/stitching/warpers.hpp>
-#include <opencv2/stitching/detail/matchers.hpp>
-#include <opencv2/stitching/detail/motion_estimators.hpp>
-#include <opencv2/stitching/detail/exposure_compensate.hpp>
-#include <opencv2/stitching/detail/seam_finders.hpp>
-#include <opencv2/stitching/detail/blenders.hpp>
-#include <opencv2/stitching/detail/camera.hpp>
+#include <opencv2/stitching/stitcher.hpp>
+
+#include "../MyBlender.h"
+#include "../MyCompensator.h"
+
+//#include <opencv2/features2d/features2d.hpp>
+//#include <opencv2/stitching/warpers.hpp>
+//#include <opencv2/stitching/detail/matchers.hpp>
+//#include <opencv2/stitching/detail/motion_estimators.hpp>
+//#include <opencv2/stitching/detail/exposure_compensate.hpp>
+//#include <opencv2/stitching/detail/seam_finders.hpp>
+//#include <opencv2/stitching/detail/blenders.hpp>
+//#include <opencv2/stitching/detail/camera.hpp>
 
 namespace cv {
 

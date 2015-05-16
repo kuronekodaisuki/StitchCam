@@ -48,7 +48,7 @@ using namespace std;
 namespace cv {
 namespace detail {
 
-MyCompensator::MyCompensator(int try_gpu)
+MyCompensator::MyCompensator(bool try_gpu)
 {
 	use_gpu = false;
 

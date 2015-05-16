@@ -58,7 +58,7 @@ namespace detail {
 class MyCompensator : public ExposureCompensator
 {
 public:
-	MyCompensator(int try_gpu = false);
+	MyCompensator(bool try_gpu = false);
     void feed(const std::vector<Point> &corners, const std::vector<Mat> &images,
               const std::vector<std::pair<Mat,uchar> > &masks);
     void apply(int index, Point corner, Mat &image, const Mat &mask);

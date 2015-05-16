@@ -7,7 +7,7 @@
 #include "OpenCVStitchDlg.h"
 #include "afxdialogex.h"
 
-#include "MyCompensator.h"
+#include "../MyCompensator.h"
 #include "../MyBlender.h"
 #include "../MySeamFinder.h"
 #include "../MyWarper.h"
