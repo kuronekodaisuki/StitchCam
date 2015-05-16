@@ -42,7 +42,7 @@
 
 #include "MyStitcher.h"
 
-#define WORK_RESOLUTION 0.08 // 0riginal 0.6
+#define WORK_RESOLUTION 0.08 // 0riginal 0.8
 #define SEAM_RESOLUTION 0.08 // Original 0.1
 #define PANO_THRESHOLD 0.5 // original 1
 
@@ -110,9 +110,6 @@ MyStitcher::Status MyStitcher::estimateTransform(InputArray images, const vector
 
     estimateCameraParams();
 
-	cameras_save = cameras_;
-	warped_image_scale_save = warped_image_scale_;
-
     return OK;
 }
 
@@ -133,7 +130,6 @@ MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pa
     if (!imgs.empty())
     {
         CV_Assert(imgs.size() == imgs_.size());
-		restore();
 
         Mat img;
         seam_est_imgs_.resize(imgs.size());
