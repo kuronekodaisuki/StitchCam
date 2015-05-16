@@ -57,7 +57,7 @@ public:
 	MyCompensator(bool useGpu = false);	// constructor
 
 protected:
-	Mat_<double> gains_;	// �␳�l
+	Mat_<double> gains_;	// 
 	bool useGpu;
 	bool openCL;
 };
