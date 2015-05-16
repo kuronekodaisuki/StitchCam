@@ -42,6 +42,10 @@
 
 #include "MyStitcher.h"
 
+#define WORK_RESOLUTION 0.08 // 0riginal 0.6
+#define SEAM_RESOLUTION 0.08 // Original 0.1
+#define PANO_THRESHOLD 0.5 // original 1
+
 using namespace std;
 
 namespace cv {
@@ -49,10 +53,10 @@ namespace cv {
 MyStitcher MyStitcher::createDefault(bool try_use_gpu)
 {
     MyStitcher stitcher;
-    stitcher.setRegistrationResol(0.08);
-    stitcher.setSeamEstimationResol(0.08);
+    stitcher.setRegistrationResol(WORK_RESOLUTION);
+    stitcher.setSeamEstimationResol(SEAM_RESOLUTION);
     stitcher.setCompositingResol(ORIG_RESOL);
-    stitcher.setPanoConfidenceThresh(0.5);
+    stitcher.setPanoConfidenceThresh(PANO_THRESHOLD);
     stitcher.setWaveCorrection(true);
     stitcher.setWaveCorrectKind(detail::WAVE_CORRECT_HORIZ);
     stitcher.setFeaturesMatcher(new detail::BestOf2NearestMatcher(try_use_gpu));
@@ -105,6 +109,7 @@ MyStitcher::Status MyStitcher::estimateTransform(InputArray images, const vector
         return status;
 
     estimateCameraParams();
+
 	cameras_save = cameras_;
 	warped_image_scale_save = warped_image_scale_;
 
@@ -127,8 +132,8 @@ MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pa
     images.getMatVector(imgs);
     if (!imgs.empty())
     {
-		restore();
         CV_Assert(imgs.size() == imgs_.size());
+		restore();
 
         Mat img;
         seam_est_imgs_.resize(imgs.size());
@@ -285,8 +290,8 @@ MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pa
         // Compensate exposure
         exposure_comp_->apply((int)img_idx, corners[img_idx], img_warped, mask_warped);
 
-        img_warped.convertTo(img_warped_s, CV_16S);
-        img_warped.release();
+        //img_warped.convertTo(img_warped_s, CV_16S);
+        //img_warped.release();
         img.release();
         mask.release();
 
@@ -303,7 +308,7 @@ MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pa
         }
 
         // Blend the current image
-        blender_->feed(img_warped_s, mask_warped, corners[img_idx]);
+        blender_->feed(img_warped, mask_warped, corners[img_idx]);
 		img_warped.release();
     }
 
@@ -314,8 +319,8 @@ MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pa
 
     // Preliminary result is in CV_16SC3 format, but all values are in [0,255] range,
     // so convert it to avoid user confusing
-    result.convertTo(pano_, CV_8U);
-	//result.copyTo(pano_);
+    //result.convertTo(pano_, CV_8U);
+	result.copyTo(pano_);
     return OK;
 }
 

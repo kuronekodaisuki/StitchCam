@@ -40,8 +40,8 @@
 //
 //M*/
 
-#ifndef __OPENCV_STITCHING_MYSTITCHER_HPP__
-#define __OPENCV_STITCHING_MYSTITCHER_HPP__
+#ifndef __MY_STITCHER_HPP__
+#define __MY_STITCHER_HPP__
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/features2d/features2d.hpp>
@@ -55,7 +55,7 @@
 
 namespace cv {
 
-class CV_EXPORTS MyStitcher
+class MyStitcher
 {
 public:
     enum { ORIG_RESOL = -1 };
@@ -134,14 +134,11 @@ public:
     std::vector<detail::CameraParams> cameras() const { return cameras_; }
     double workScale() const { return work_scale_; }
 
-	void restore()	{
-		cameras_ = cameras_save; 
+	void restore() {
+		cameras_ = cameras_save;
 		warped_image_scale_ = warped_image_scale_save;
 	}
-
     MyStitcher() {}
-
-    std::vector<detail::ImageFeatures> features_;
 
 private:
     Status matchImages();
@@ -165,7 +162,7 @@ private:
     std::vector<cv::Mat> imgs_;
     std::vector<std::vector<cv::Rect> > rois_;
     std::vector<cv::Size> full_img_sizes_;
-    //std::vector<detail::ImageFeatures> features_;
+    std::vector<detail::ImageFeatures> features_;
     std::vector<detail::MatchesInfo> pairwise_matches_;
     std::vector<cv::Mat> seam_est_imgs_;
     std::vector<int> indices_;
@@ -175,10 +172,10 @@ private:
     double seam_work_aspect_;
     double warped_image_scale_;
 
-	std::vector<detail::CameraParams> cameras_save;	// saved camera param
+	std::vector<detail::CameraParams> cameras_save;
 	double warped_image_scale_save;
 };
 
 } // namespace cv
 
-#endif // __OPENCV_STITCHING_STITCHER_HPP__
+#endif //__MY_STITCHER_HPP__
