@@ -27,5 +27,5 @@ protected:
 	gpu::GpuMat gpuDst_;
 };
 
-} //namespace cv {
-} //namespace detail {
+} // namespace detail {
+} // namespace cv
