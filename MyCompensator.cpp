@@ -1,11 +1,3 @@
-#ifdef __APPLE__
-#include <OpenCL/opencl.h>
-#include <OpenCL/cl_ext.h>
-#else
-#include <CL/cl.h>
-#include <CL/cl_ext.h>	// cl_intel_accelerator and other extensions
-#endif
-
 #include "MyCompensator.h"
 
 using namespace std;
@@ -24,32 +16,6 @@ namespace detail {
 MyCompensator::MyCompensator(bool useGpu)
 {
 	this->useGpu = useGpu;
-	openCL = false; //useGpu;
-#ifdef NDEBUG
-	if (useGpu)
-#endif
-	{
-		/*
-		ocl::PlatformsInfo oclPlatforms;
-		ocl::getOpenCLPlatforms(oclPlatforms);
-
-		for(size_t i = 0; i < oclPlatforms.size(); i++)
-		{
-			cout << oclPlatforms[i]->platformName << endl;
-			for (size_t device = 0; device < oclPlatforms[i]->devices.size(); device++)
-			{
-				if (oclPlatforms[i]->devices[device]->deviceType == ocl::CVCL_DEVICE_TYPE_GPU)
-				{
-					ocl::setDevice(oclPlatforms[i]->devices[device]);	// CUDA revert
-					cout << "\t" << oclPlatforms[i]->devices[device]->deviceName << endl;
-					// OpenCL device extensions
-					string clDeviceExtensions = oclPlatforms[i]->devices[device]->deviceExtensions;				
-					cout << "\t" << clDeviceExtensions << endl;
-				}
-			}
-		}
-		*/
-	}
 }
 
 void MyCompensator::feed(const vector<Point> &corners, const vector<Mat> &images,
@@ -88,7 +54,7 @@ void MyCompensator::feed(const vector<Point> &corners, const vector<Mat> &images
 
                 double Isum1 = 0, Isum2 = 0;
 #ifdef	_OPENMP
-#pragma omp parallel for reduction(+: Isum1, Isum2)
+#				pragma omp parallel for reduction(+: Isum1, Isum2)
 #endif
                 for (int y = 0; y < roi.height; ++y)
                 {
@@ -96,7 +62,6 @@ void MyCompensator::feed(const vector<Point> &corners, const vector<Mat> &images
                     const Point3_<uchar>* r2 = subimg2.ptr<Point3_<uchar> >(y);
                     for (int x = 0; x < roi.width; ++x)
                     {
-						// use with CUDA (AtomicAdd)
                         if (intersect(y, x))
                         {
                             Isum1 += sqrt(static_cast<double>(sqr(r1[x].x) + sqr(r1[x].y) + sqr(r1[x].z)));
@@ -135,21 +100,7 @@ void MyCompensator::feed(const vector<Point> &corners, const vector<Mat> &images
 
 void MyCompensator::apply(int index, Point corner, Mat &image, const Mat &mask)
 {
-	if (openCL)
-	{
-		/*
-		ocl::oclMat mat(image);
-		size_t threads[3] = {mat.rows * mat.step, 1, 1};
-		vector<pair<size_t, const void *>>args;
-		args.push_back( std::make_pair( sizeof(cl_mem), (void *) &mat.data ));
-		//args.push_back( std::make_pair( sizeof(cl_mem), (void *) &mat.data ));
-		ocl::ProgramSource program("apply", "");	// oclApply.cl
-		ocl::openCLExecuteKernelInterop(ocl::Context::getContext(), 
-        program, "apply", threads, NULL, args, -1, -1, NULL);	// channel, depth
-		mat.download(image);
-		*/
-	}
-	else if (useGpu)
+	if (useGpu)
 	{
 		cv::gpu::device::cudaApply(image, gains_(index, 0));
 	}

@@ -107,6 +107,16 @@ void MyBlender::feed(const gpu::GpuMat &img, const gpu::GpuMat &mask, Point tl)
 {
 	CV_Assert(img.type() == CV_8UC3);
     CV_Assert(mask.type() == CV_8U);
+	// ‚±‚±‚Å“ü—Í‚É‰‚¶‚Ädst_‚ğì¬‚·‚é
+	if (dst_.empty()) {
+		dst_.create(dst_roi_.size(), img.type());
+		dst_.setTo(Scalar::all(0));
+		if (use_gpu)
+		{
+			gpuDst_.upload(dst_);
+		}	
+	}
+
     int dx = tl.x - dst_roi_.x;
     int dy = tl.y - dst_roi_.y;
 

@@ -14,12 +14,6 @@ using namespace std;
 namespace cv {
 namespace detail {
 
-//class GainCompensatorGpu : public GainCompensator
-//{
-    //void apply(int index, Point corner, Mat &image, const Mat &mask);
-//	virtual void apply(int index, Point corner, gpu::GpuMat &image, const gpu::GpuMat &mask);
-//};
-
 class MyCompensator : public GainCompensator
 {
 public:
@@ -59,7 +53,7 @@ public:
 protected:
 	Mat_<double> gains_;	// 
 	bool useGpu;
-	bool openCL;
+	//bool openCL;
 };
 
 }
