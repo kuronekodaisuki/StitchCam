@@ -741,10 +741,10 @@ StitchImage::Status StitchImage::composePanoramaGpu(InputArray images, OutputArr
         mask.release();
 
         // Make sure seam mask has proper size
-        dilate(masks_warped[img_idx], dilated_mask, Mat());
-        resize(dilated_mask, seam_mask, mask_warped.size());
+        //dilate(masks_warped[img_idx], dilated_mask, Mat());
+        //resize(dilated_mask, seam_mask, mask_warped.size());
 
-        mask_warped = seam_mask & mask_warped;
+        //mask_warped = seam_mask & mask_warped;
 
         if (!is_blender_prepared)
         {
