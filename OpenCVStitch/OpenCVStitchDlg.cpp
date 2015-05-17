@@ -496,14 +496,14 @@ void COpenCVStitchDlg::OnBnClickedRadio1()
 
 void COpenCVStitchDlg::OnBnClickedRadio2()
 {
-	stitcher.setSeamFinder(new detail::DpSeamFinder());
+	stitcher.setSeamFinder(new detail::MySeamFinder());
 	m_status.SetWindowText("DpSeamFinder");
 }
 
 
 void COpenCVStitchDlg::OnBnClickedRadio3()
 {
-	stitcher.setSeamFinder(new detail::VoronoiSeamFinder());
+	stitcher.setSeamFinder(new detail::MyVoronoiSeamFinder());
 	m_status.SetWindowText("VoronoiSeamFinder");
 }
 
