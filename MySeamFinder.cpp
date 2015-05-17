@@ -8,6 +8,85 @@ using namespace std;
 namespace cv {
 namespace detail {
 
+void MyVoronoiSeamFinder::find(const vector<Size> &sizes, const vector<Point> &corners,
+                             vector<Mat> &masks)
+{
+    LOGLN("Finding seams...");
+    if (sizes.size() == 0)
+        return;
+
+#if ENABLE_LOG
+    int64 t = getTickCount();
+#endif
+
+    sizes_ = sizes;
+    corners_ = corners;
+    masks_ = masks;
+    run();
+
+    LOGLN("Finding seams, time: " << ((getTickCount() - t) / getTickFrequency()) << " sec");
+}
+
+
+void MyVoronoiSeamFinder::findInPair(size_t first, size_t second, Rect roi)
+{
+    const int gap = 10;
+    Mat submask1(roi.height + 2 * gap, roi.width + 2 * gap, CV_8U);
+    Mat submask2(roi.height + 2 * gap, roi.width + 2 * gap, CV_8U);
+
+    Size img1 = sizes_[first], img2 = sizes_[second];
+    Mat mask1 = masks_[first], mask2 = masks_[second];
+    Point tl1 = corners_[first], tl2 = corners_[second];
+
+    // Cut submasks with some gap
+#ifdef	_OPENMP
+	#pragma omp parallel for
+#endif
+    for (int y = -gap; y < roi.height + gap; ++y)
+    {
+        for (int x = -gap; x < roi.width + gap; ++x)
+        {
+            int y1 = roi.y - tl1.y + y;
+            int x1 = roi.x - tl1.x + x;
+            if (y1 >= 0 && x1 >= 0 && y1 < img1.height && x1 < img1.width)
+                submask1.at<uchar>(y + gap, x + gap) = mask1.at<uchar>(y1, x1);
+            else
+                submask1.at<uchar>(y + gap, x + gap) = 0;
+
+            int y2 = roi.y - tl2.y + y;
+            int x2 = roi.x - tl2.x + x;
+            if (y2 >= 0 && x2 >= 0 && y2 < img2.height && x2 < img2.width)
+                submask2.at<uchar>(y + gap, x + gap) = mask2.at<uchar>(y2, x2);
+            else
+                submask2.at<uchar>(y + gap, x + gap) = 0;
+        }
+    }
+
+    Mat collision = (submask1 != 0) & (submask2 != 0);
+    Mat unique1 = submask1.clone(); unique1.setTo(0, collision);
+    Mat unique2 = submask2.clone(); unique2.setTo(0, collision);
+
+    Mat dist1, dist2;
+    distanceTransform(unique1 == 0, dist1, CV_DIST_L1, 3);
+    distanceTransform(unique2 == 0, dist2, CV_DIST_L1, 3);
+
+    Mat seam = dist1 < dist2;
+
+#ifdef	_OPENMP
+	#pragma omp parallel for
+#endif
+     for (int y = 0; y < roi.height; ++y)
+    {
+        for (int x = 0; x < roi.width; ++x)
+        {
+            if (seam.at<uchar>(y + gap, x + gap))
+                mask2.at<uchar>(roi.y - tl2.y + y, roi.x - tl2.x + x) = 0;
+            else
+                mask1.at<uchar>(roi.y - tl1.y + y, roi.x - tl1.x + x) = 0;
+        }
+    }
+}
+
 void MySeamFinder::resolveConflicts(
         const Mat &image1, const Mat &image2, Point tl1, Point tl2, Mat &mask1, Mat &mask2)
 {
@@ -70,7 +149,7 @@ void MySeamFinder::resolveConflicts(
             const int c[] = {c1, c2};
             const int l[] = {l1, l2};
 #ifdef	_OPENMP
-//			#pragma omp parallel for
+			#pragma omp parallel for
 #endif
             for (int i = 0; i < 2; ++i)
             {
@@ -116,7 +195,7 @@ void MySeamFinder::resolveConflicts(
     int dx1 = unionTl_.x - tl1.x, dy1 = unionTl_.y - tl1.y;
     int dx2 = unionTl_.x - tl2.x, dy2 = unionTl_.y - tl2.y;
 #ifdef	_OPENMP
-//	#pragma omp parallel for
+	#pragma omp parallel for
 #endif
     for (int y = 0; y < mask2.rows; ++y)
     {
@@ -128,7 +207,7 @@ void MySeamFinder::resolveConflicts(
         }
     }
 #ifdef	_OPENMP
-//	#pragma omp parallel for
+	#pragma omp parallel for
 #endif
     for (int y = 0; y < mask1.rows; ++y)
     {
@@ -248,7 +327,7 @@ void MySeamFinder::findComponents()
     brs_.clear();
     contours_.clear();
 #ifdef	_OPENMP
-//	#pragma omp parallel for
+	#pragma omp parallel for
 #endif
     for (int y = 0; y < unionSize_.height; ++y)
     {
@@ -585,7 +664,7 @@ void MySeamFinder::computeCosts(
 
     costV.create(roi.height, roi.width+1);
 #ifdef	_OPENMP
-//	#pragma omp parallel for
+	#pragma omp parallel for
 #endif
     for (int y = roi.y; y < roi.br().y; ++y)
     {
@@ -611,7 +690,7 @@ void MySeamFinder::computeCosts(
 
     costH.create(roi.height+1, roi.width);
 #ifdef	_OPENMP
-//	#pragma omp parallel for
+	#pragma omp parallel for
 #endif
     for (int y = roi.y; y < roi.br().y+1; ++y)
     {

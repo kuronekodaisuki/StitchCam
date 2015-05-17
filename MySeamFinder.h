@@ -115,5 +115,15 @@ private:
     std::vector<std::vector<Point> > contours_;
     std::set<std::pair<int, int> > edges_;
 };
+
+class MyVoronoiSeamFinder : public PairwiseSeamFinder
+{
+public:
+    virtual void find(const std::vector<Size> &size, const std::vector<Point> &corners,
+                      std::vector<Mat> &masks);
+private:
+    void findInPair(size_t first, size_t second, Rect roi);
+};
+
 }
 }
