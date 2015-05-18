@@ -131,7 +131,7 @@ public:
     std::vector<detail::CameraParams> cameras() const { return cameras_; }
     double workScale() const { return work_scale_; }
 
-	// ���
+	// Change from original
 	MyStitcher() {}
 
 protected:
