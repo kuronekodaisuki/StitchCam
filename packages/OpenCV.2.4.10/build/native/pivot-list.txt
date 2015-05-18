@@ -1,0 +1,12 @@
+OpenCV.overlay-x64_v110_Release
+OpenCV.overlay-x64_v110_Debug
+OpenCV.overlay-x64_v120_Debug
+OpenCV.overlay-Win32_v120_Debug
+OpenCV.overlay-Win32_v120_Release
+OpenCV.overlay-Win32_v110_Release
+OpenCV.overlay-x64_v120_Release
+OpenCV.overlay-Win32_v110_Debug
+OpenCV.overlay-Win32_v110
+OpenCV.overlay-Win32_v120
+OpenCV.overlay-x64_v120
+OpenCV.overlay-x64_v110
