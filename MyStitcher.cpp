@@ -39,11 +39,6 @@
 // the use of this software, even if advised of the possibility of such damage.
 //
 //M*/
-#ifdef _MSC_VER
-#include "stdafx.h"
-#else
-#define TRACE()
-#endif
 #include "MyStitcher.h"
 
 #define WORK_RESOLUTION 0.08 // 0riginal 0.6
@@ -339,9 +334,9 @@ MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pa
 MyStitcher::Status MyStitcher::composePanoramaGpu(InputArray images, OutputArray pano)
 {
     LOGLN("Warping images (auxiliary)... ");
-
+#ifdef _MSC_VER
 	int64 t = getTickCount();
-
+#endif
     vector<Mat> imgs;
     images.getMatVector(imgs);
     if (!imgs.empty())
@@ -539,7 +534,7 @@ MyStitcher::Status MyStitcher::composePanoramaGpu(InputArray images, OutputArray
     //result.convertTo(pano_, CV_8U);
 	result.copyTo(pano_);
 #ifdef	_MSC_VER
-	TRACE("%.2fmsec\n", (getTickCount() - t) / getTickFrequency() * 1000);
+	//TRACE("%.2fmsec\n", (getTickCount() - t) / getTickFrequency() * 1000);
 #endif
     return OK;
 }
