@@ -33,9 +33,9 @@ static void callback(void *pItem, char *pDeviceName)
 	printf("%s\n", (char*)pDeviceName);
 }
 
-const float WIDTH = 640.0;
-const float HEIGHT = 480.0;
-const float FPS = 15.0;
+const float WIDTH = 320.0; // 640.0
+const float HEIGHT = 240.0; // 480.0
+const float FPS = 30.0;
 
 int main(int argc, char *aargv[])
 {

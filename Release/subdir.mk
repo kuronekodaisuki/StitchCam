@@ -7,6 +7,7 @@ CPP_SRCS += \
 ../MyBlender.cpp \
 ../MyCompensator.cpp \
 ../MySeamFinder.cpp \
+../MyStitcher.cpp \
 ../MyWarper.cpp \
 ../StitchImage.cpp \
 ../WebCam.cpp \
@@ -16,22 +17,23 @@ CPP_SRCS += \
 
 CU_SRCS += \
 ../Blender.cu \
-../gpuApply.cu 
+../Compensator.cu 
 
 CU_DEPS += \
 ./Blender.d \
-./gpuApply.d 
+./Compensator.d 
 
 OBJS += \
 ./Blender.o \
+./Compensator.o \
 ./MyBlender.o \
 ./MyCompensator.o \
 ./MySeamFinder.o \
+./MyStitcher.o \
 ./MyWarper.o \
 ./StitchImage.o \
 ./WebCam.o \
 ./cuda.o \
-./gpuApply.o \
 ./libraries.o \
 ./main.o 
 
@@ -39,6 +41,7 @@ CPP_DEPS += \
 ./MyBlender.d \
 ./MyCompensator.d \
 ./MySeamFinder.d \
+./MyStitcher.d \
 ./MyWarper.d \
 ./StitchImage.d \
 ./WebCam.d \
@@ -56,18 +59,18 @@ Blender.o: ../Blender.cu
 	@echo 'Finished building: $<'
 	@echo ' '
 
-%.o: ../%.cpp
-	@echo 'Building file: $<'
-	@echo 'Invoking: GCC C++ Compiler'
-	g++ -I/usr/include -I/usr/local/cuda/include -O3 -msse4.2 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
-	@echo 'Finished building: $<'
-	@echo ' '
-
-gpuApply.o: ../gpuApply.cu
+Compensator.o: ../Compensator.cu
 	@echo 'Building file: $<'
 	@echo 'Invoking: NVCC Compiler'
 	nvcc -O3   -odir "" -M -o "$(@:%.o=%.d)" "$<"
 	nvcc -O3   "$@" "$<"
+	@echo 'Finished building: $<'
+	@echo ' '
+
+%.o: ../%.cpp
+	@echo 'Building file: $<'
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ -I/usr/include -I/usr/local/cuda/include -O3 -msse4.2 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
