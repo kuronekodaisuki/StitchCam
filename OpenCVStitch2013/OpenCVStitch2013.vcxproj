@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\OpenCV.2.4.10\build\native\OpenCV.props" Condition="Exists('..\packages\OpenCV.2.4.10\build\native\OpenCV.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -43,7 +42,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <NuGetPackageImportStamp>b1f9e1fc</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>07cb1ce0</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -159,7 +158,6 @@
   <ItemGroup>
     <CudaCompile Include="..\Blender.cu" />
     <CudaCompile Include="..\Compensator.cu" />
-    <None Include="packages.config" />
     <None Include="res\OpenCVStitch2013.rc2" />
   </ItemGroup>
   <ItemGroup>
@@ -168,18 +166,10 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 6.5.targets" />
-    <Import Project="..\packages\OpenCV.2.4.10\build\native\OpenCV.targets" Condition="Exists('..\packages\OpenCV.2.4.10\build\native\OpenCV.targets')" />
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
       <UserProperties RESOURCE_FILE="OpenCVStitch2013.rc" />
     </VisualStudio>
   </ProjectExtensions>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\OpenCV.2.4.10\build\native\OpenCV.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\OpenCV.2.4.10\build\native\OpenCV.props'))" />
-    <Error Condition="!Exists('..\packages\OpenCV.2.4.10\build\native\OpenCV.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\OpenCV.2.4.10\build\native\OpenCV.targets'))" />
-  </Target>
 </Project>
