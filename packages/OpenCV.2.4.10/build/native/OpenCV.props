@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="OpenCV_init_props_0">
+  <PropertyGroup Condition="'$(Needs-OpenCV-Version)' == '' OR '$(Needs-OpenCV-Version)' == '*Undefined*'">
+    <NugetMsBuildExtensionLoaded Condition="'$(NugetMsBuildExtensionLoaded)' == '' OR '$(NuGet-OverlayLoaded)' == 'false'">false</NugetMsBuildExtensionLoaded>
+    <NuGet-NativeExtensionPath Condition="'$(NuGet-NativeExtensionPath)' == '' OR '$(NuGet-NativeExtensionVersion)' =='' OR $(NuGet-NativeExtensionVersion) &lt; 562967165599744">$(MSBuildThisFileDirectory)\private</NuGet-NativeExtensionPath>
+    <Needs-OpenCV />
+    <Needs-OpenCV-Version />
+  </PropertyGroup>
+  <Target Name="OpenCV_init_props_0">
+    <PropertyGroup>
+      <Needs-OpenCV-Version Condition="'$(Needs-OpenCV)' == '' OR $(Needs-OpenCV) &lt; 562967133945856 ">2.4.10</Needs-OpenCV-Version>
+      <Needs-OpenCV Condition="'$(Needs-OpenCV)' == '' OR $(Needs-OpenCV) &lt; 562967133945856 ">562967133945856</Needs-OpenCV>
+    </PropertyGroup>
+  </Target>
+</Project>
