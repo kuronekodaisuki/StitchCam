@@ -9,9 +9,8 @@
 #include <opencv2/stitching/stitcher.hpp>
 #include <cuda_runtime_api.h>
 
-#include "..\WebCam.h"
-//#include "StitchImage.h"
-#include "MyStitcher.h"
+#include "../WebCam.h"
+#include "../MyStitcher.h"
 
 using namespace cv;
 
