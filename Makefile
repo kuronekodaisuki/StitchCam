@@ -49,6 +49,8 @@ all: StitchCam
 StitchCam: $(OBJS) $(CUDA_OBJS)
 	$(GCC) $(CUDA_LFLAGS) $(LFLAGS) -o "StitchCam" $(OBJS) $(CUDA_OBJS) $(LIBS)
 
+$(OBJS): $(SRCS)
+
 clean:
 	-$(RM) $(CU_DEPS)$(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) StitchCam
 	-@echo ' '
