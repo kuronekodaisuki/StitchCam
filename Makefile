@@ -30,7 +30,7 @@ CFLAGS = -target-cpu-arch ARM
 LFLAGS = -L/usr/local/lib
 
 CUDA_CFLAGS = -c -O3 -target-cpu-arch ARM
-CUDA_LFLAGS = -L/usr/local/cuda/include
+CUDA_LFLAGS = -L/usr/local/cuda/lib --cudart
 
 NVCC = nvcc
 GCC = arm-linux-gnueabihf-g++
@@ -42,7 +42,7 @@ GCC = arm-linux-gnueabihf-g++
 .c.o:
 	$(GCC) $(CFLAGS) $<
  
-LIBS := -lcudart -lopencv_core -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_stitching
+LIBS := -lopencv_core -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_stitching
 
 
 all: Stitch
