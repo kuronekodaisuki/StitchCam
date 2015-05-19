@@ -12,9 +12,12 @@
 #include <opencv2/stitching/stitcher.hpp>
 //#include <opencv2/highgui/highgui.hpp>
 
-#include "cuda.h"
 #include "WebCam.h"
-#include "StitchImage.h"
+#include "MyStitcher.h"
+#include "MyBlender.h"
+#include "MyCompensator.h"
+#include "MySeamFinder.h"
+#include "MyWarper.h"
 
 using namespace std;
 using namespace cv;
@@ -33,8 +36,8 @@ static void callback(void *pItem, char *pDeviceName)
 	printf("%s\n", (char*)pDeviceName);
 }
 
-const float WIDTH = 320.0; // 640.0
-const float HEIGHT = 240.0; // 480.0
+const float WIDTH = 640.0;
+const float HEIGHT = 480.0;
 const float FPS = 30.0;
 
 int main(int argc, char *aargv[])
@@ -44,8 +47,10 @@ int main(int argc, char *aargv[])
 	count = WebCam::EnumDevices((PENUMDEVICE)&callback, NULL);
 	printf("Camera device count:%d\n", count);
 
-	Stitcher stitcher = Stitcher::createDefault();
-
+	MyStitcher stitcher = MyStitcher::createDefault(true);
+	stitcher.setSeamFinder(new detail::MyVoronoiSeamFinder());
+	stitcher.setBlender(new detail::MyBlender());
+	
 	if (count == 1)
 	{
 		VideoCapture cam;
@@ -123,18 +128,14 @@ int main(int argc, char *aargv[])
 					start = getTick();
 					switch (stitcher.stitch(images, panorama))
 					{
-					case Stitcher::OK:
+					case MyStitcher::OK:
 						printf("%d msec\n", getTick() - start);
 						imshow("Panorama", panorama);
 						break;
 
-					case Stitcher::ERR_NEED_MORE_IMGS:
+					case MyStitcher::ERR_NEED_MORE_IMGS:
 						printf("Need more IMAGES\n");
 						break;
-
-					//case Stitcher::ORIG_RESOL:
-					//	printf("Resolution\n");
-					//	break;
 
 					default:
 						printf("Failed to stitch\n");
@@ -143,7 +144,7 @@ int main(int argc, char *aargv[])
 
 				if (continuous) {
 					start = getTick();
-					if (Stitcher::OK == stitcher.composePanorama(images, panorama)) {
+					if (MyStitcher::OK == stitcher.composePanorama(images, panorama)) {
 						printf("%d msec\n", getTick() - start);
 						imshow("Panorama", panorama);
 					}

@@ -26,8 +26,8 @@ CUDA_OBJS = \
 	Blender.o \
 	Compensator.o
 
-CFLAGS = -O3
-LFLAGS = -L/usr/local/lib
+CFLAGS = -O3 -march=armv7 -fopenmp
+LFLAGS = -L/usr/local/lib 
 
 CUDA_CFLAGS = -O3 -target-cpu-arch ARM -m32
 CUDA_LFLAGS = --cudart static --relocatable-device-code=false -gencode arch=compute_30,code=sm_30 -gencode arch=compute_32,code=sm_32 -link -L/usr/local/cuda/lib 
@@ -36,7 +36,7 @@ NVCC = nvcc
 GCC = g++
 
 
-LIBS := -lopencv_core -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_stitching
+LIBS := -lopencv_core -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_stitching -lgomp
 
 
 all: Stitch
