@@ -45,9 +45,9 @@ GCC = arm-linux-gnueabihf-g++
 LIBS := -lcudart -lopencv_core -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_stitching
 
 
-all: StitchCam
+all: Stitch
 
-StitchCam: $(OBJS) $(CUDA_OBJS)
+Stitch: $(OBJS) $(CUDA_OBJS)
 	$(GCC) $(CUDA_LFLAGS) $(LFLAGS) -o "StitchCam" $(OBJS) $(CUDA_OBJS) $(LIBS)
 
 $(OBJS): $(SRCS)
