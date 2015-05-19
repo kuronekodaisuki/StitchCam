@@ -132,9 +132,9 @@ int main(int argc, char *aargv[])
 						printf("Need more IMAGES\n");
 						break;
 
-					case Stitcher::ORIG_RESOL:
-						printf("Resolution\n");
-						break;
+					//case Stitcher::ORIG_RESOL:
+					//	printf("Resolution\n");
+					//	break;
 
 					default:
 						printf("Failed to stitch\n");
