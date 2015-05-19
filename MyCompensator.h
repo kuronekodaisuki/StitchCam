@@ -3,7 +3,7 @@
 //
 #pragma once
 #include <opencv2/opencv.hpp>
-#include <opencv2/ocl/ocl.hpp>
+//#include <opencv2/ocl/ocl.hpp>
 #include <opencv2/gpu/gpumat.hpp>
 #include <opencv2/stitching/detail/util.hpp>
 #include <opencv2/stitching/detail/exposure_compensate.hpp>
