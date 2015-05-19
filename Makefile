@@ -48,7 +48,7 @@ LIBS := -lcudart -lopencv_core -lopencv_gpu -lopencv_highgui -lopencv_imgproc -l
 all: Stitch
 
 Stitch: $(OBJS) $(CUDA_OBJS)
-	$(GCC) $(CUDA_LFLAGS) $(LFLAGS) -o "StitchCam" $(OBJS) $(CUDA_OBJS) $(LIBS)
+	$(GCC) $(CUDA_LFLAGS) $(LFLAGS) -o "Stitch" $(OBJS) $(CUDA_OBJS) $(LIBS)
 
 $(OBJS): $(SRCS)
 	$(GCC) -c $(CFLAGS) $<
