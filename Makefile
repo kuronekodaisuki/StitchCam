@@ -21,6 +21,9 @@ OBJS = \
 	WebCam.o \
 	main.o 
 
+CUDA_SRCS = Blender.cu \
+	Compensator.cu
+
 CUDA_OBJS = \
 	Blender.o \
 	Compensator.o
@@ -50,6 +53,10 @@ StitchCam: $(OBJS) $(CUDA_OBJS)
 	$(GCC) $(CUDA_LFLAGS) $(LFLAGS) -o "StitchCam" $(OBJS) $(CUDA_OBJS) $(LIBS)
 
 $(OBJS): $(SRCS)
+	$(GCC) -c $(CFLAGS) $<
+
+$(CUDA_OBJS): $(CUDA_SRCS)
+	$(NVCC) $(CUDA_CFLAGS) $<
 
 clean:
 	-$(RM) $(CU_DEPS)$(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) StitchCam
