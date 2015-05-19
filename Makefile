@@ -30,18 +30,12 @@ CFLAGS = -target-cpu-arch ARM
 LFLAGS = -L/usr/local/lib
 
 CUDA_CFLAGS = -c -O3 -target-cpu-arch ARM
-CUDA_LFLAGS = -L/usr/local/cuda/lib --cudart
+CUDA_LFLAGS = --cudart static -L/usr/local/cuda/lib 
 
 NVCC = nvcc
 GCC = arm-linux-gnueabihf-g++
 
 
-.cu.o:
-	$(NVCC) $(CUDA_CFLAGS) $<
-
-.c.o:
-	$(GCC) $(CFLAGS) $<
- 
 LIBS := -lopencv_core -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_stitching
 
 
