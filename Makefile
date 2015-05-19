@@ -2,6 +2,15 @@
 # Makefile for Jetson TK1
 ################################################################################
 
+SRCS = MyBlender.cpp \
+	MyCompensator.cpp \
+	MySeamFinder.cpp \
+	MyStitcher.cpp \
+	MyWarper.cpp \
+	WebCam.cpp \
+	Blender.cu \
+	Compensator.cu \
+	main.cpp
 
 OBJS = \
 	MyBlender.o \
