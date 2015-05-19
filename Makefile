@@ -26,14 +26,14 @@ CUDA_OBJS = \
 	Blender.o \
 	Compensator.o
 
-CFLAGS = -target-cpu-arch ARM
+CFLAGS = -O3
 LFLAGS = -L/usr/local/lib
 
-CUDA_CFLAGS = -c -O3 -target-cpu-arch ARM -m32
+CUDA_CFLAGS = -O3 -target-cpu-arch ARM -m32
 CUDA_LFLAGS = --cudart static --relocatable-device-code=false -gencode arch=compute_30,code=sm_30 -gencode arch=compute_32,code=sm_32 -link -L/usr/local/cuda/lib 
 
 NVCC = nvcc
-GCC = arm-linux-gnueabihf-g++
+GCC = g++
 
 
 LIBS := -lopencv_core -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_stitching
@@ -48,7 +48,7 @@ $(OBJS): $(SRCS)
 	$(GCC) -c $(CFLAGS) $<
 
 $(CUDA_OBJS): $(CUDA_SRCS)
-	$(NVCC) $(CUDA_CFLAGS) $<
+	$(NVCC) -c $(CUDA_CFLAGS) $<
 
 clean:
 	-$(RM) $(CU_DEPS)$(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) StitchCam
