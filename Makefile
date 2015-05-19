@@ -29,8 +29,8 @@ CUDA_OBJS = \
 CFLAGS = -target-cpu-arch ARM
 LFLAGS = -L/usr/local/lib
 
-CUDA_CFLAGS = -c -O3 -target-cpu-arch ARM
-CUDA_LFLAGS = --cudart static --relocatable-device-code=false -gencode arch=compute_20,code=compute_20 -gencode arch=compute_20,code=sm_20 -link -L/usr/local/cuda/lib 
+CUDA_CFLAGS = -c -O3 -target-cpu-arch ARM -m32
+CUDA_LFLAGS = --cudart static --relocatable-device-code=false -gencode arch=compute_30,code=sm_30 -gencode arch=compute_32,code=sm_32 -link -L/usr/local/cuda/lib 
 
 NVCC = nvcc
 GCC = arm-linux-gnueabihf-g++
