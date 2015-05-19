@@ -30,7 +30,7 @@ CFLAGS = -target-cpu-arch ARM
 LFLAGS = -L/usr/local/lib
 
 CUDA_CFLAGS = -c -O3 -target-cpu-arch ARM
-CUDA_LFLAGS = --cudart static -L/usr/local/cuda/lib 
+CUDA_LFLAGS = --cudart static --relocatable-device-code=false -gencode arch=compute_20,code=compute_20 -gencode arch=compute_20,code=sm_20 -link -L/usr/local/cuda/lib 
 
 NVCC = nvcc
 GCC = arm-linux-gnueabihf-g++
@@ -42,7 +42,7 @@ LIBS := -lopencv_core -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_st
 all: Stitch
 
 Stitch: $(OBJS) $(CUDA_OBJS)
-	$(GCC) $(CUDA_LFLAGS) $(LFLAGS) -o "Stitch" $(OBJS) $(CUDA_OBJS) $(LIBS)
+	$(NVCC) $(CUDA_LFLAGS) $(LFLAGS) -o "Stitch" $(OBJS) $(CUDA_OBJS) $(LIBS)
 
 $(OBJS): $(SRCS)
 	$(GCC) -c $(CFLAGS) $<
