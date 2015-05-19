@@ -8,8 +8,6 @@ SRCS = MyBlender.cpp \
 	MyStitcher.cpp \
 	MyWarper.cpp \
 	WebCam.cpp \
-	Blender.cu \
-	Compensator.cu \
 	main.cpp
 
 OBJS = \
