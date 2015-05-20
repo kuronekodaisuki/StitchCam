@@ -3,7 +3,6 @@
 //
 #pragma once
 #include <opencv2/opencv.hpp>
-//#include <opencv2/ocl/ocl.hpp>
 #include <opencv2/gpu/gpumat.hpp>
 #include <opencv2/stitching/detail/util.hpp>
 #include <opencv2/stitching/detail/exposure_compensate.hpp>
@@ -12,6 +11,14 @@
 using namespace std;
 
 namespace cv {
+
+namespace gpu {
+namespace device {
+	void cudaApply(gpu::GpuMat &image, double scale);
+	void cudaApply(Mat &image, double scale);
+}	// namespace device
+}	// namespace gpu
+
 namespace detail {
 
 class MyCompensator : public GainCompensator
@@ -53,8 +60,7 @@ public:
 protected:
 	Mat_<double> gains_;	// 
 	bool useGpu;
-	//bool openCL;
 };
 
-}
-}
+}	// namespace detail
+}	// namespace cv

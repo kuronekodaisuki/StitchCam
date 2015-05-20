@@ -26,11 +26,7 @@ namespace detail {
 
 	void cudaFeed(const gpu::GpuMat &image, const gpu::GpuMat &mask, gpu::GpuMat &dst, int dx, int dy)
 	{
-#ifdef JETSON_TK1
-		dim3 threads(8, 8);	// 64 threads for Jetson TK1
-#else
 		dim3 threads(16, 16);	// 256 threads yealds better performance
-#endif
 		dim3 blocks(image.cols / threads.x, image.rows / threads.y);
 
 		switch (image.type())

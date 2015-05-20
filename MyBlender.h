@@ -8,6 +8,9 @@
 namespace cv {
 namespace detail {
 
+void cudaFeed(const gpu::GpuMat &image, const gpu::GpuMat &mask, gpu::GpuMat &dst, int dx, int dy); // cuda version feed
+void cudaFeed(const Mat &img, const Mat &mask, gpu::GpuMat &dst, int dx, int dy);	// cuda version feed
+
 class MyBlender : public Blender
 {
 public:
@@ -27,5 +30,5 @@ protected:
 	gpu::GpuMat gpuDst_;
 };
 
-} // namespace detail {
+} // namespace detail
 } // namespace cv

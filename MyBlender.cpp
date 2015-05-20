@@ -8,8 +8,6 @@
 namespace cv {
 namespace detail {
 
-void cudaFeed(const gpu::GpuMat &image, const gpu::GpuMat &mask, gpu::GpuMat &dst, int dx, int dy); // cuda version feed
-void cudaFeed(const Mat &img, const Mat &mask, gpu::GpuMat &dst, int dx, int dy);	// cuda version feed
 
 MyBlender::MyBlender(int try_gpu)
 {
