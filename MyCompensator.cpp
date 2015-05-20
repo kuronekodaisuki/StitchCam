@@ -94,7 +94,7 @@ void MyCompensator::apply(int index, Point corner, Mat &image, const Mat &mask)
 {
 	if (useGpu)
 	{
-		cv::gpu::device::cudaApply(image, gains_(index, 0));
+		cv::gpu::device::cudaApply(image, (float)gains_(index, 0));
 	}
 	else
 	{
@@ -109,7 +109,7 @@ void MyCompensator::apply(int index, Point corner, gpu::GpuMat &image, const gpu
 {
 	if (useGpu)
 	{
-		cv::gpu::device::cudaApply(image, gains_(index, 0));
+		cv::gpu::device::cudaApply(image, (float)gains_(index, 0));
 	}
 #ifdef	_DEBUG
 	cout << "GAIN" << index << ": " << gains_(index, 0) << endl;	// 

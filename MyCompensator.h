@@ -14,8 +14,8 @@ namespace cv {
 
 namespace gpu {
 namespace device {
-	void cudaApply(gpu::GpuMat &image, double scale);
-	void cudaApply(Mat &image, double scale);
+	void cudaApply(gpu::GpuMat &image, float scale);
+	void cudaApply(Mat &image, float scale);
 }	// namespace device
 }	// namespace gpu
 

@@ -12,7 +12,7 @@ namespace device {
 //////////////////////////////////////////////////////////////////////////
 // Exposure compensate kernel
 template<typename T>
-__global__ void applyKernel(int rows, int cols, T *ptr, int step, double scale)
+__global__ void applyKernel(int rows, int cols, T *ptr, int step, float scale)
 {
 	int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -26,15 +26,12 @@ __global__ void applyKernel(int rows, int cols, T *ptr, int step, double scale)
 }
 
 
-void cudaApply(gpu::GpuMat &image, double scale)
+void cudaApply(gpu::GpuMat &image, float scale)
 {
 	int rows = image.rows;
 	int cols = image.cols;
-#ifdef	JETSON_TK1
-	dim3 threads(8, 8);	// 64 threads for Jetson TK1
-#else
+
 	dim3 threads(16, 16);	// 256 threads yealds better performance
-#endif
 	dim3 blocks(cols / threads.x, rows / threads.y);
 
 	switch (image.type())
@@ -50,12 +47,32 @@ void cudaApply(gpu::GpuMat &image, double scale)
 	}
 }
 
-void cudaApply(Mat &image, double scale)
+void cudaApply(Mat &image, float scale)
 {
+#ifdef	JETSON_TK1
+	int rows = image.rows;
+	int cols = image.cols;
+
+	dim3 threads(8, 8);	// 64 threads for Jetson TK1
+		dim3 blocks(cols / threads.x, rows / threads.y);
+
+	switch (image.type())
+	{
+	case CV_8UC3:
+		applyKernel<<<blocks, threads>>>(rows, cols, (uchar *)image.datastart, image.step, scale);
+		cudaDeviceSynchronize();
+		break;
+	case CV_16SC3:
+		applyKernel<<<blocks, threads>>>(rows, cols, (short *)image.datastart, image.step, scale);
+		cudaDeviceSynchronize();
+		break;
+	}
+#else
 	gpu::GpuMat gpuMat;
 	gpuMat.upload(image);
 	cudaApply(gpuMat, scale);
 	gpuMat.download(image);
+#endif
 }
 }	// namespace device
 }	// namespace gpu
