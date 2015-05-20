@@ -29,7 +29,7 @@ CUDA_OBJS = \
 CFLAGS = -O3 -march=armv7 -fopenmp
 LFLAGS = -L/usr/local/lib 
 
-CUDA_CFLAGS = -O3 -target-cpu-arch ARM -m32
+CUDA_CFLAGS = -O3 -target-cpu-arch ARM -m32 -DJETSON_TK1
 CUDA_LFLAGS = --cudart static --relocatable-device-code=false -gencode arch=compute_30,code=sm_30 -gencode arch=compute_32,code=sm_32 -link -L/usr/local/cuda/lib 
 
 NVCC = nvcc
