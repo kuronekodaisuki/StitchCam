@@ -165,6 +165,8 @@ BOOL COpenCVStitchDlg::OnInitDialog()
 	int count = 0;
 	if ((count = gpu::getCudaEnabledDeviceCount()) > 0)
 	{
+		cv::gpu::DeviceInfo info(0);
+		TRACE("DeviceInfo:%s\n", info.name());
 		stitcher = MyStitcher::createDefault(true);	// CUDA‚ªg—p‚Å‚«‚éê‡
 		stitcher.setBlender(new detail::MyBlender());
 		stitcher.setExposureCompensator(new detail::MyCompensator(true));
