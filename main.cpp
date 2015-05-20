@@ -2,7 +2,7 @@
  * main.cpp
  *
  *  Created on: 2015/03/19
- *      Author: mao
+ *      Author: Hiroshi Matsuoka
  */
 
 #include <stdio.h>
@@ -42,7 +42,7 @@ const float FPS = 30.0;
 
 int main(int argc, char *aargv[])
 {
-	int count = gpu::getCudaEnabledDeviceCount(); //cudaDeviceCount();
+	int count = gpu::getCudaEnabledDeviceCount();
 	printf("CUDA device count:%d\n", count);
 	count = WebCam::EnumDevices((PENUMDEVICE)&callback, NULL);
 	printf("Camera device count:%d\n", count);
@@ -140,6 +140,19 @@ int main(int argc, char *aargv[])
 					default:
 						printf("Failed to stitch\n");
 					}
+					break;
+				case 'n': // NoSeamFinder
+					stitcher.setSeamFinder(new detail::NoSeamFinder());
+					printf("NoSeamFinder\n");
+					break;
+				case 'v': // VoronoiSeamFinder
+					stitcher.setSeamFinder(new detail::MyVoronoiSeamFinder());
+					printf("VoronoiSeamFinder\n");
+					break;
+				case 'd': // DpSeamFinder
+					stitcher.setSeamFinder(new detail::MySeamFinder());
+					printf("DpSeamFinder\n");
+					break;
 				}
 
 				if (continuous) {
