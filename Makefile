@@ -26,7 +26,7 @@ CUDA_OBJS = \
 	Blender.o \
 	Compensator.o
 
-CFLAGS = -O3 -march=armv7 -fopenmp
+CFLAGS = -O3 -march=armv7 -fopenmp -DJETSON_TK1
 LFLAGS = -L/usr/local/lib 
 
 CUDA_CFLAGS = -O3 -target-cpu-arch ARM -m32 -DJETSON_TK1

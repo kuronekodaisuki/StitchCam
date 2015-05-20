@@ -57,7 +57,8 @@ int main(int argc, char *aargv[])
 
 	MyStitcher stitcher = MyStitcher::createDefault(true);
 	stitcher.setSeamFinder(new detail::MyVoronoiSeamFinder());
-	stitcher.setBlender(new detail::MyBlender());
+	stitcher.setBlender(new detail::MyBlender(true));
+	stitcher.setExposureCompensator(new detail::MyCompensator(true));
 	
 	if (count == 1)
 	{
