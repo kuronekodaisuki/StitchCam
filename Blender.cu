@@ -56,6 +56,28 @@ void cudaFeed(const Mat &image, const Mat &mask, gpu::GpuMat &dst, int dx, int d
 	cudaFeed(gpuImg, gpuMask, dst, dx, dy);
 }
 
+void cudaFeed(const Mat &image, const Mat &mask, Mat &dst, int dx, int dy)
+{
+	dim3 threads(8, 8);	// 64 threads yealds better performance
+	dim3 blocks(image.cols / threads.x, image.rows / threads.y);
+
+	switch (image.type())
+	{
+	case CV_8UC3:
+		kernelFeed<<<blocks, threads>>>(image.rows, image.cols, 
+			dst.ptr<uchar>(dy) + dx * 3, image.ptr<uchar>(), mask.ptr<uchar>(),
+			dst.step, image.step, mask.step);
+		cudaDeviceSynchronize();
+		break;
+	case CV_16SC3:
+		kernelFeed<<<blocks, threads>>>(image.rows, image.cols, 
+			dst.ptr<short>(dy) + dx * 3, image.ptr<short>(), mask.ptr<uchar>(),
+			dst.step, image.step, mask.step);
+		cudaDeviceSynchronize();
+		break;
+	}
+}
+
 }	// namespace device
 }	// namespace gpu
 }	// namespace cv;

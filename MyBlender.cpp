@@ -46,10 +46,12 @@ void MyBlender::feed(const Mat &img, const Mat &mask, Point tl)
 	if (dst_.empty()) {
 		dst_.create(dst_roi_.size(), img.type());
 		dst_.setTo(Scalar::all(0));
+#ifndef JETSON_TK1
 		if (use_gpu)
 		{
 			gpuDst_.upload(dst_);
-		}	
+		}
+#endif
 	}
 
 	int dx = tl.x - dst_roi_.x;
@@ -57,7 +59,11 @@ void MyBlender::feed(const Mat &img, const Mat &mask, Point tl)
 
 	if (use_gpu)
 	{
+#ifdef JETSON_TK1
+		cv::gpu::device::cudaFeed(img, mask, dst_, dx, dy);
+#else
 		cv::gpu::device::cudaFeed(img, mask, gpuDst_, dx, dy);
+#endif
 	}
 	else if (img.type() == CV_8UC3)
 	{
@@ -125,8 +131,10 @@ void MyBlender::blend(Mat &dst, Mat &dst_mask)
 {
 	if (use_gpu)
 	{
+#ifndef JETSON_TK1
 		gpuDst_.download(dst);
 		gpuDst_.release();
+#endif
 	}
 	else 
 	{

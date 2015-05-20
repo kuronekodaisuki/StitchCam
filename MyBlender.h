@@ -11,6 +11,7 @@ namespace gpu {
 namespace device {
 void cudaFeed(const gpu::GpuMat &image, const gpu::GpuMat &mask, gpu::GpuMat &dst, int dx, int dy); // cuda version feed
 void cudaFeed(const Mat &img, const Mat &mask, gpu::GpuMat &dst, int dx, int dy);	// cuda version feed
+void cudaFeed(const Mat &img, const Mat &mask, Mat &dst, int dx, int dy);	// Jetson TK1 version feed
 }	// namespace device
 }	// namespace gpu
 
