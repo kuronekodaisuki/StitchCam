@@ -57,7 +57,7 @@ void MyBlender::feed(const Mat &img, const Mat &mask, Point tl)
 
 	if (use_gpu)
 	{
-		cudaFeed(img, mask, gpuDst_, dx, dy);
+		cv::gpu::device::cudaFeed(img, mask, gpuDst_, dx, dy);
 	}
 	else if (img.type() == CV_8UC3)
 	{
@@ -118,7 +118,7 @@ void MyBlender::feed(const gpu::GpuMat &img, const gpu::GpuMat &mask, Point tl)
     int dx = tl.x - dst_roi_.x;
     int dy = tl.y - dst_roi_.y;
 
-	cudaFeed(img, mask, gpuDst_, dx, dy);
+	cv::gpu::device::cudaFeed(img, mask, gpuDst_, dx, dy);
 }
 
 void MyBlender::blend(Mat &dst, Mat &dst_mask)
@@ -138,5 +138,5 @@ void MyBlender::blend(Mat &dst, Mat &dst_mask)
     dst_mask_.release();
 }
 
-} //namespace cv {
-} //namespace detail {
+} // namespace detail
+} // namespace cv

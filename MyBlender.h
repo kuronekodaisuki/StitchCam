@@ -6,10 +6,16 @@
 #include <opencv2/stitching/detail/util.hpp>
 
 namespace cv {
-namespace detail {
 
+namespace gpu {
+namespace device {
 void cudaFeed(const gpu::GpuMat &image, const gpu::GpuMat &mask, gpu::GpuMat &dst, int dx, int dy); // cuda version feed
 void cudaFeed(const Mat &img, const Mat &mask, gpu::GpuMat &dst, int dx, int dy);	// cuda version feed
+}	// namespace device
+}	// namespace gpu
+
+namespace detail {
+
 
 class MyBlender : public Blender
 {

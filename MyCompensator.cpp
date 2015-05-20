@@ -3,9 +3,6 @@
 using namespace std;
 
 namespace cv {
-
-
-
 namespace detail {
 
 MyCompensator::MyCompensator(bool useGpu)
