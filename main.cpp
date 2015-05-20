@@ -9,6 +9,7 @@
 #include <sys/time.h>
 
 #include <opencv2/opencv.hpp>
+#include <opencv2/core/gpumat.hpp>
 #include <opencv2/stitching/stitcher.hpp>
 //#include <opencv2/highgui/highgui.hpp>
 
@@ -44,6 +45,13 @@ int main(int argc, char *aargv[])
 {
 	int count = gpu::getCudaEnabledDeviceCount();
 	printf("CUDA device count:%d\n", count);
+	for (int i = 0; i < count; i++)
+	{
+		gpu::DeviceInfo info(i);
+		cout << info.name() << endl;
+		//char *name = info.name();
+		//printf("NAME: %s\n", name);
+	}
 	count = WebCam::EnumDevices((PENUMDEVICE)&callback, NULL);
 	printf("Camera device count:%d\n", count);
 
