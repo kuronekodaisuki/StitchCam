@@ -309,7 +309,7 @@ MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pa
         resize(dilated_mask, seam_mask, mask_warped.size());
 
         mask_warped = seam_mask & mask_warped;
-
+		try {
         if (!is_blender_prepared)
         {
             blender_->prepare(corners, sizes);
@@ -318,6 +318,9 @@ MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pa
 
         // Blend the current image
         blender_->feed(img_warped, mask_warped, corners[img_idx]);
+		} catch (Exception e) {
+			cerr << e.msg << " " << e.what() << endl;
+		}
 		img_warped.release();
     }
 
