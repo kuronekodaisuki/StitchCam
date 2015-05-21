@@ -130,9 +130,9 @@ MyStitcher::Status MyStitcher::composePanorama(OutputArray pano)
 MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pano)
 {
 #ifndef JETSON_TK1
-	if (use_gpu) {
-		return composePanoramaGpu(images, pano);
-	}
+//	if (use_gpu) {
+//		return composePanoramaGpu(images, pano);
+//	}
 #endif
 
     LOGLN("Warping images (auxiliary)... ");

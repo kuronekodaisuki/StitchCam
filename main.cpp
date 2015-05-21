@@ -49,15 +49,13 @@ int main(int argc, char *aargv[])
 	{
 		gpu::DeviceInfo info(i);
 		cout << info.name() << endl;
-		//char *name = info.name();
-		//printf("NAME: %s\n", name);
 	}
 	count = WebCam::EnumDevices((PENUMDEVICE)&callback, NULL);
 	printf("Camera device count:%d\n", count);
 
 	MyStitcher stitcher = MyStitcher::createDefault(true);
 	stitcher.setSeamFinder(new detail::MyVoronoiSeamFinder());
-	stitcher.setBlender(new detail::MyBlender(true));
+	stitcher.setBlender(new detail::MyBlender());
 	stitcher.setExposureCompensator(new detail::MyCompensator(true));
 	
 	if (count == 1)
