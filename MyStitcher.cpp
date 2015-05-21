@@ -273,6 +273,11 @@ MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pa
             sizes[i] = roi.size();
         }
     }
+    if (!is_blender_prepared)
+    {
+        blender_->prepare(corners, sizes);
+        is_blender_prepared = true;
+    }
 
     for (size_t img_idx = 0; img_idx < imgs_.size(); ++img_idx)
     {
@@ -308,22 +313,14 @@ MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pa
         mask.release();
 
         // Make sure seam mask has proper size
-        dilate(masks_warped[img_idx], dilated_mask, Mat());
-        resize(dilated_mask, seam_mask, mask_warped.size());
+        //dilate(masks_warped[img_idx], dilated_mask, Mat());
+        //resize(dilated_mask, seam_mask, mask_warped.size());
 
-        mask_warped = seam_mask & mask_warped;
-		try {
-        if (!is_blender_prepared)
-        {
-            blender_->prepare(corners, sizes);
-            is_blender_prepared = true;
-        }
+        //mask_warped = seam_mask & mask_warped;
 
         // Blend the current image
         blender_->feed(img_warped, mask_warped, corners[img_idx]);
-		} catch (Exception e) {
-			cerr << e.msg << " " << e.what() << endl;
-		}
+
 		img_warped.release();
     }
 
@@ -483,6 +480,11 @@ MyStitcher::Status MyStitcher::composePanoramaGpu(InputArray images, OutputArray
             sizes[i] = roi.size();
         }
     }
+    if (!is_blender_prepared)
+    {
+        blender_gpu->prepare(corners, sizes);
+        is_blender_prepared = true;
+    }
 
     for (size_t img_idx = 0; img_idx < imgs_.size(); ++img_idx)
     {
@@ -524,11 +526,6 @@ MyStitcher::Status MyStitcher::composePanoramaGpu(InputArray images, OutputArray
 
         //mask_warped = seam_mask & mask_warped;
 
-        if (!is_blender_prepared)
-        {
-            blender_gpu->prepare(corners, sizes);
-            is_blender_prepared = true;
-        }
 
         // Blend the current image
         blender_gpu->feed(img_warped_gpu, mask_warped_gpu, corners[img_idx]);
