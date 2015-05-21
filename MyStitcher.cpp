@@ -235,49 +235,52 @@ MyStitcher::Status MyStitcher::composePanorama(InputArray images, OutputArray pa
     bool is_compose_scale_set = false;
 
     Mat full_img, img;
+
+	if (!is_compose_scale_set)
+    {
+        if (compose_resol_ > 0)
+            compose_scale = min(1.0, sqrt(compose_resol_ * 1e6 / full_img.size().area()));
+        is_compose_scale_set = true;
+
+        // Compute relative scales
+        //compose_seam_aspect = compose_scale / seam_scale_;
+        compose_work_aspect = compose_scale / work_scale_;
+
+        // Update warped image scale
+        warped_image_scale_ *= static_cast<float>(compose_work_aspect);
+        w = warper_->create((float)warped_image_scale_);
+
+        // Update corners and sizes
+        for (size_t i = 0; i < imgs_.size(); ++i)
+        {
+            // Update intrinsics
+            cameras_[i].focal *= compose_work_aspect;
+            cameras_[i].ppx *= compose_work_aspect;
+            cameras_[i].ppy *= compose_work_aspect;
+
+            // Update corner and size
+            Size sz = full_img_sizes_[i];
+            if (std::abs(compose_scale - 1) > 1e-1)
+            {
+                sz.width = cvRound(full_img_sizes_[i].width * compose_scale);
+                sz.height = cvRound(full_img_sizes_[i].height * compose_scale);
+            }
+
+            Mat K;
+            cameras_[i].K().convertTo(K, CV_32F);
+            Rect roi = w->warpRoi(sz, K, cameras_[i].R);
+            corners[i] = roi.tl();
+            sizes[i] = roi.size();
+        }
+    }
+
     for (size_t img_idx = 0; img_idx < imgs_.size(); ++img_idx)
     {
         LOGLN("Compositing image #" << indices_[img_idx] + 1);
 
         // Read image and resize it if necessary
         full_img = imgs_[img_idx];
-        if (!is_compose_scale_set)
-        {
-            if (compose_resol_ > 0)
-                compose_scale = min(1.0, sqrt(compose_resol_ * 1e6 / full_img.size().area()));
-            is_compose_scale_set = true;
 
-            // Compute relative scales
-            //compose_seam_aspect = compose_scale / seam_scale_;
-            compose_work_aspect = compose_scale / work_scale_;
-
-            // Update warped image scale
-            warped_image_scale_ *= static_cast<float>(compose_work_aspect);
-            w = warper_->create((float)warped_image_scale_);
-
-            // Update corners and sizes
-            for (size_t i = 0; i < imgs_.size(); ++i)
-            {
-                // Update intrinsics
-                cameras_[i].focal *= compose_work_aspect;
-                cameras_[i].ppx *= compose_work_aspect;
-                cameras_[i].ppy *= compose_work_aspect;
-
-                // Update corner and size
-                Size sz = full_img_sizes_[i];
-                if (std::abs(compose_scale - 1) > 1e-1)
-                {
-                    sz.width = cvRound(full_img_sizes_[i].width * compose_scale);
-                    sz.height = cvRound(full_img_sizes_[i].height * compose_scale);
-                }
-
-                Mat K;
-                cameras_[i].K().convertTo(K, CV_32F);
-                Rect roi = w->warpRoi(sz, K, cameras_[i].R);
-                corners[i] = roi.tl();
-                sizes[i] = roi.size();
-            }
-        }
         if (std::abs(compose_scale - 1) > 1e-1)
             resize(full_img, img, Size(), compose_scale, compose_scale);
         else
