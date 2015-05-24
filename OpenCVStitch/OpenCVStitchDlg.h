@@ -81,4 +81,5 @@ public:
 	afx_msg void OnBnClickedRadio3();
 	afx_msg void OnBnClickedRadio4();
 	CButton m_NoSeamFinder;
+	CStatic m_gpu;
 };

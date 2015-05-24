@@ -79,10 +79,11 @@ void COpenCVStitchDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CAM3, m_cam3);
 	DDX_Control(pDX, IDC_CAM4, m_cam4);
 	DDX_Control(pDX, IDC_WIDE, m_qvga);
-//	DDX_Control(pDX, IDC_SAVE, m_save);
+	//	DDX_Control(pDX, IDC_SAVE, m_save);
 	DDX_Control(pDX, IDC_START, m_start);
 	DDX_Control(pDX, IDC_STATUS, m_status);
 	DDX_Control(pDX, IDCANCEL, m_NoSeamFinder);
+	DDX_Control(pDX, IDC_GPU, m_gpu);
 }
 
 BEGIN_MESSAGE_MAP(COpenCVStitchDlg, CDialogEx)
@@ -167,6 +168,7 @@ BOOL COpenCVStitchDlg::OnInitDialog()
 	{
 		cv::gpu::DeviceInfo info(0);
 		TRACE("DeviceInfo:%s\n", info.name());
+		m_gpu.SetWindowTextA(info.name().c_str());
 		stitcher = MyStitcher::createDefault(true);	// CUDAÇ™égópÇ≈Ç´ÇÈèÍçá
 		stitcher.setBlender(new detail::MyBlender());
 		stitcher.setExposureCompensator(new detail::MyCompensator(true));
