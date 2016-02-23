@@ -15,14 +15,14 @@ template<typename T>
 __global__ void applyKernel(int rows, int cols, T *ptr, int step, float scale)
 {
 	int x = blockIdx.x * blockDim.x + threadIdx.x;
-    int y = blockIdx.y * blockDim.y + threadIdx.y;
+	int y = blockIdx.y * blockDim.y + threadIdx.y;
 	int offset = x * 3 + y * step;
 	if (x < cols && y < rows)
-    {
+	{
 		ptr[offset] = saturate_cast<T>(scale * ptr[offset]);
 		ptr[offset + 1] = saturate_cast<T>(scale * ptr[offset + 1]);
 		ptr[offset + 2] = saturate_cast<T>(scale * ptr[offset + 2]);
-    }
+	}
 }
 
 
@@ -54,7 +54,7 @@ void cudaApply(Mat &image, float scale)
 	int cols = image.cols;
 
 	dim3 threads(8, 8);	// 64 threads for Jetson TK1
-		dim3 blocks(cols / threads.x, rows / threads.y);
+	dim3 blocks(cols / threads.x, rows / threads.y);
 
 	switch (image.type())
 	{
