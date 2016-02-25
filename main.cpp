@@ -85,7 +85,16 @@ int main(int argc, char *aargv[])
 			bool res, continuous = false;
 			VideoCapture cam0, cam1;	
 			vector<Mat> images;
+#ifdef ZEROCOPY
+			Size _size(WIDTH, HEIGHT);
+			gpu::CudaMem _srcCuda;
+			gpu::CudaMem _lCuda(_size, CV_8UC3, CudaMem::ALLOC_ZEROCOPY); // share with CPU
+			gpu::CudaMem _rCuda(_size, CV_8UC3, CudaMem::ALLOC_ZEROCOPY); // share with CPU
+			Mat left = _lCuda.createMatHeader();
+			Mat right = _rCuda.createMatHeader();
+#else
 			Mat left, right;
+#endif
 			res = cam0.open(CV_CAP_V4L2 + 0);
 			res = cam0.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
 			res = cam0.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
@@ -101,16 +110,16 @@ int main(int argc, char *aargv[])
 			{
 				Mat image, panorama;
 				if (cam0.isOpened()) {
-					cam0 >> image;
-					if (image.empty() == false) {
+					if (cam0.read(image))
+					{
 						image.copyTo(left);
 						images.push_back(left);
 						imshow("cam0", image);
 					}
 				}
 				if (cam1.isOpened()) {
-					cam1 >> image;
-					if (image.empty() == false) {
+					if (cam1.read(image))
+					{
 						image.copyTo(right);
 						images.push_back(right);
 						imshow("cam1", image);
