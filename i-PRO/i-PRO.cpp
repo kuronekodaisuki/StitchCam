@@ -3,7 +3,7 @@
 
 #include <opencv2/opencv.hpp>
 
-const char* camera1 = "rtsp://192.168.131.22/Src/MediaInput/stream_1";
+const char* camera1 = "rtsp://CyberAgent:FutureTechHub1234@192.168.131.22/Src/MediaInput/stream_1";
 
 int main()
 {
